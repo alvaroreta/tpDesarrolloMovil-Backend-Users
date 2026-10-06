@@ -1,0 +1,7 @@
+FIREBASE:
+    Se crearon dos colecciones "Usuarios" y "Productos"
+
+
+SIGNUP:
+    Se incorpora al formulario el ingreso de telefono, cal, barrio,altura, cargo y se vincula a la base de datos al crear un usuario nuevo.
+    se define un catcheo de cada error de olos input nuevo.

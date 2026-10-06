@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { use, useState } from 'react';
 //-- Importa scrollview para generar scroll vertical en la página
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image, ScrollView } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-import { auth } from '../src/config/firebaseConfig';
+import { auth, db } from '../src/config/firebaseConfig';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFonts, Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold } from '@expo-google-fonts/poppins';
 
@@ -12,13 +13,19 @@ export default function SignUp({ navigation }) {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
+  const [cargo, setCargo] = useState('')
+  const [barrio, setBarrio] = useState('')
+  const [calle, setCalle] = useState('')
+  const [altura, setAltura] = useState('')
+  const [telefono, setTelefono] = useState('')
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+
   const handleSignUp = async () => {
-    if (!firstName.trim() || !lastName.trim() || !email.trim() || !password || !confirmPassword) {
+    if (!firstName.trim() || !lastName.trim() || !email.trim() || !password || !confirmPassword || !calle.trim() || !altura.trim() || !cargo.trim() || !barrio.trim() || !telefono.trim()) {
       Alert.alert("Error", "Todos los campos son obligatorios.");
       return;
     }
@@ -26,6 +33,27 @@ export default function SignUp({ navigation }) {
     //--Incorporamos revisión de caracteres en el formulario de alta
     if (!letrasRegex.test(firstName.trim()) || !letrasRegex.test(lastName.trim())) {
       Alert.alert("Nombre o Apellido inválido", "Los campos de nombre y apellido solo pueden contener letras.");
+      return;
+    }
+
+    if (!letrasRegex.test(cargo.trim()) || !letrasRegex.test(barrio.trim())) {
+      Alert.alert("Dato inválido", "El cargo y el barrio solo pueden contener letras.")
+      return;
+    }
+
+    const calleRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\d\s.]+$/;
+    if (!calleRegex.test(calle.trim())) {
+      Alert.alert("Calle inválida", "La calle solo puede contener letras y números.")
+      return;
+    }
+
+    if (!/^\d+$/.test(altura.trim())) {
+      Alert.alert("Altura inválida", "La altura debe ser un número.")
+      return;
+    }
+
+    if (!/^\d{7,15}$/.test(telefono.trim())) {
+      Alert.alert("Teléfono inválido", "El teléfono debe tener entre 7 y 15 dígitos.")
       return;
     }
 
@@ -79,9 +107,22 @@ export default function SignUp({ navigation }) {
 
     try {
       await updateProfile(credential.user, { displayName: `${firstName.trim()} ${lastName.trim()}` });
+      //-- Guardamos el perfil completo en Firestore: coleccion "usuarios" con el UID como id del documento
+      await setDoc(doc(db, 'usuarios', credential.user.uid), {
+        nombre: firstName.trim(),
+        apellido: lastName.trim(),
+        correo: email.trim(),
+        cargo: cargo.trim(),
+        barrio: barrio.trim(),
+        calle: calle.trim(),
+        altura: altura.trim(),
+        telefono: telefono.trim(),
+        creado: new Date().toISOString()
+      });
       Alert.alert("Registro exitoso", "Usuario registrado con éxito.");
     } catch (error) {
-      Alert.alert("Cuenta creada", "La cuenta se creó, pero no se pudo guardar el nombre.");
+      console.error('Error al guardar el perfil en Firestore:', error.code, error.message);
+      Alert.alert("Cuenta creada", "La cuenta se creó, pero no se pudo guardar el perfil en la base de datos.");
     }
     // Firebase inicia la sesión y el navegador muestra Home.
   };
@@ -96,6 +137,7 @@ export default function SignUp({ navigation }) {
       keyboardShouldPersistTaps="handled"
     >
       <Image source={require('../assets/logo_sa/icon.png')} style={styles.logo} />
+
       <Text style={styles.label}>Nombre</Text>
       <View style={styles.inputContainer}>
         <FontAwesome name="user" size={20} color="#ccc" style={styles.icon} />
@@ -128,6 +170,66 @@ export default function SignUp({ navigation }) {
           onChangeText={setEmail}
           keyboardType="email-address"
           autoCapitalize="none"
+        />
+      </View>
+
+      <Text style={styles.label}>Cargo</Text>
+      <View style={styles.inputContainer}>
+        <FontAwesome name="user" size={20} color="#ccc" style={styles.icon} />
+        <TextInput
+          style={styles.input}
+          placeholder="Seleccione su cargo"
+          value={cargo}
+          onChangeText={setCargo}
+        />
+      </View>
+
+
+      <Text style={styles.label}>Barrio</Text>
+      <View style={styles.inputContainer}>
+        <FontAwesome name="user" size={20} color="#ccc" style={styles.icon} />
+        <TextInput
+          style={styles.input}
+          placeholder="Ingrese su barrio"
+          value={barrio}
+          onChangeText={setBarrio}
+        />
+      </View>
+
+
+      <Text style={styles.label}>Calle</Text>
+      <View style={styles.inputContainer}>
+        <FontAwesome name="user" size={20} color="#ccc" style={styles.icon} />
+        <TextInput
+          style={styles.input}
+          placeholder="Ingrese su Calle"
+          value={calle}
+          onChangeText={setCalle}
+        />
+      </View>
+
+      <Text style={styles.label}>Altura</Text>
+      <View style={styles.inputContainer}>
+        <FontAwesome name="user" size={20} color="#ccc" style={styles.icon} />
+        <TextInput
+          style={styles.input}
+          placeholder="Ingrese la altura"
+          value={altura}
+          onChangeText={setAltura}
+          keyboardType="numeric"
+        />
+      </View>
+
+
+      <Text style={styles.label}>Telefono</Text>
+      <View style={styles.inputContainer}>
+        <FontAwesome name="user" size={20} color="#ccc" style={styles.icon} />
+        <TextInput
+          style={styles.input}
+          placeholder="Ingrese su telefóno"
+          value={telefono}
+          onChangeText={setTelefono}
+          keyboardType="phone-pad"
         />
       </View>
 
