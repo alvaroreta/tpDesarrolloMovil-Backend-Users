@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     //--Elimina el logo de la organización del contenedor y lo posiciona arriba 
     position: 'absolute',
-    top: '20',
+    top: 20,
   },
   title: {
     //Incopora poppins al titulo

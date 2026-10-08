@@ -5,3 +5,9 @@ FIREBASE:
 SIGNUP:
     Se incorpora al formulario el ingreso de telefono, cal, barrio,altura, cargo y se vincula a la base de datos al crear un usuario nuevo.
     se define un catcheo de cada error de olos input nuevo.
+
+HOME:
+    Se incorpora menú fijo interior con selección de pantallas.
+    Se crea una tarjeta que mapea los productos en la base de datos con la información: "nombre" / "stock" y botoes de "ver"/"editar"/"eliminar"por cada uno
+    Scroll vertical
+    
