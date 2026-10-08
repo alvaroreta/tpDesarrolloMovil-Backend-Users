@@ -43,3 +43,5 @@ src/config/firebaseConfig.js
 # generated native folders
 /ios
 /android
+
+AGENTS.md
