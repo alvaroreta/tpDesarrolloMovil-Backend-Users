@@ -1,6 +1,6 @@
 import React, { use, useState } from 'react';
 //-- Importa scrollview para generar scroll vertical en la página
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image, ScrollView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image, ScrollView, Modal, KeyboardAvoidingView, Platform } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { auth, db } from '../src/config/firebaseConfig';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
@@ -8,12 +8,24 @@ import { doc, setDoc } from 'firebase/firestore';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFonts, Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold } from '@expo-google-fonts/poppins';
 
+//- lista de cargos para la optionbar de creación de cuentas
+const CARGOS = [
+  'Encargado Administrativo',
+  'Aux. Adm.',
+  'Enc. de Deposito',
+  'Responsable de compra y acopio',
+  'Acopiador',
+  'Jefe de Planta',
+  'Analista QA',
+];
+
 export default function SignUp({ navigation }) {
   const [fontsLoaded] = useFonts({ Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold });
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [cargo, setCargo] = useState('')
+  const [showCargoOptions, setShowCargoOptions] = useState(false);
   const [barrio, setBarrio] = useState('')
   const [calle, setCalle] = useState('')
   const [altura, setAltura] = useState('')
@@ -36,8 +48,13 @@ export default function SignUp({ navigation }) {
       return;
     }
 
-    if (!letrasRegex.test(cargo.trim()) || !letrasRegex.test(barrio.trim())) {
-      Alert.alert("Dato inválido", "El cargo y el barrio solo pueden contener letras.")
+    if (!letrasRegex.test(barrio.trim())) {
+      Alert.alert("Dato inválido", "El barrio solo puede contener letras.")
+      return;
+    }
+
+    if (!CARGOS.includes(cargo)) {
+      Alert.alert("Cargo inválido", "Debe seleccionar un cargo de la lista.")
       return;
     }
 
@@ -130,12 +147,16 @@ export default function SignUp({ navigation }) {
   if (!fontsLoaded) return null;
 
   return (
-    <ScrollView
+    <KeyboardAvoidingView
       style={styles.container}
-      contentContainerStyle={styles.content}
-      showsVerticalScrollIndicator={false}
-      keyboardShouldPersistTaps="handled"
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
       <Image source={require('../assets/logo_sa/icon.png')} style={styles.logo} />
 
       <Text style={styles.label}>Nombre</Text>
@@ -174,15 +195,49 @@ export default function SignUp({ navigation }) {
       </View>
 
       <Text style={styles.label}>Cargo</Text>
-      <View style={styles.inputContainer}>
+      <TouchableOpacity
+        style={styles.inputContainer}
+        onPress={() => setShowCargoOptions(true)}
+        activeOpacity={0.7}
+      >
         <FontAwesome name="user" size={20} color="#ccc" style={styles.icon} />
-        <TextInput
-          style={styles.input}
-          placeholder="Seleccione su cargo"
-          value={cargo}
-          onChangeText={setCargo}
-        />
-      </View>
+        <Text style={cargo ? styles.input : styles.placeholder}>
+          {cargo || 'Seleccione su cargo'}
+        </Text>
+        <FontAwesome name="chevron-down" size={16} color="#ccc" />
+      </TouchableOpacity>
+
+      <Modal
+        visible={showCargoOptions}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowCargoOptions(false)}
+      >
+        <TouchableOpacity
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPress={() => setShowCargoOptions(false)}
+        >
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Seleccione su cargo</Text>
+            {/* La lista de cargos harcodeadas nos permite persisitir los datos a fin de poder unificar los datos entrados por el usuario */}
+            {CARGOS.map((opcion) => (
+              <TouchableOpacity
+                key={opcion}
+                style={styles.modalOption}
+                onPress={() => {
+                  setCargo(opcion);
+                  setShowCargoOptions(false);
+                }}
+              >
+                <Text style={[styles.modalOptionText, cargo === opcion && styles.modalOptionTextSelected]}>
+                  {opcion}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </TouchableOpacity>
+      </Modal>
 
 
       <Text style={styles.label}>Barrio</Text>
@@ -282,6 +337,7 @@ export default function SignUp({ navigation }) {
       </TouchableOpacity>
 
     </ScrollView >
+    </KeyboardAvoidingView>
   );
 }
 
@@ -334,6 +390,47 @@ const styles = StyleSheet.create({
     height: 40,
     fontFamily: 'Poppins_400Regular',
     fontSize: 12,
+    color: '#313131',
+  },
+  placeholder: {
+    flex: 1,
+    fontFamily: 'Poppins_400Regular',
+    fontSize: 12,
+    color: '#999',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  modalContent: {
+    width: '100%',
+    maxWidth: 400,
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    padding: 20,
+  },
+  modalTitle: {
+    fontFamily: 'Poppins_700Bold',
+    fontSize: 16,
+    color: '#313131',
+    marginBottom: 10,
+  },
+  modalOption: {
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+  },
+  modalOptionText: {
+    fontFamily: 'Poppins_400Regular',
+    fontSize: 14,
+    color: '#313131',
+  },
+  modalOptionTextSelected: {
+    color: '#c25c32',
+    fontFamily: 'Poppins_600SemiBold',
   },
   buttonWrapper: {
     marginTop: 20,

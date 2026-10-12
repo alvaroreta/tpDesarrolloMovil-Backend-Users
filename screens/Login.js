@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } from 'react-native';
+//-- incoramos KeyboardAvoidingView para evitar que el teclado se superoponga a los campos de ingresos de datos
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image, KeyboardAvoidingView, Platform } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../src/config/firebaseConfig';
@@ -52,7 +53,10 @@ export default function Login({ navigation }) {
   if (!fontsLoaded) return null;
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
       {/*--cambia icono al de Sabor Andino */}
       <Image source={require('../assets/logo_sa/icon.png')} style={styles.logo} />
       <Text style={styles.label}>Email</Text>
@@ -98,7 +102,7 @@ export default function Login({ navigation }) {
       <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
         <Text style={styles.signUpText}>REGISTRARME</Text>
       </TouchableOpacity>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 

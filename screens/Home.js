@@ -2,7 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { collection, getDocs } from 'firebase/firestore';
-import { db } from '../src/config/firebaseConfig';
+//- incopora logout de sesión actual
+import { signOut } from 'firebase/auth';
+import { auth, db } from '../src/config/firebaseConfig';
 import { useFonts, Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold } from '@expo-google-fonts/poppins';
 
 export default function Home({ navigation }) {
@@ -20,6 +22,25 @@ export default function Home({ navigation }) {
     };
     cargar();
   }, []);
+
+  //- función flecha de cierre de sesión 
+  const cerrarSesion = () => {
+    Alert.alert('Cerrar sesión', '¿Estás seguro que deseas cerrar sesión?', [
+      { text: 'Cancelar', style: 'cancel' },
+      {
+        text: 'Cerrar sesión',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await signOut(auth);
+          } catch (e) {
+            console.error('Error al cerrar sesión:', e.code, e.message);
+            Alert.alert('Error', 'No se pudo cerrar la sesión.');
+          }
+        },
+      },
+    ]);
+  };
 
   if (!fontsLoaded) return null;
 
@@ -68,6 +89,11 @@ export default function Home({ navigation }) {
         <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('InfoEmpresa')}>
           <Ionicons name="information-circle-outline" size={30} color="#ffffffff" />
         </TouchableOpacity>
+
+        <TouchableOpacity style={styles.menuItem} onPress={cerrarSesion}>
+          <Ionicons name="log-out-outline" size={30} color="#ffffffff" />
+        </TouchableOpacity>
+
       </View>
 
     </View>
@@ -152,7 +178,7 @@ const styles = StyleSheet.create({
     borderTopColor: '#e0e0e0',
     flexDirection: 'row',
     justifyContent: 'center',
-    gap: 40,
+    gap: 25,
     alignItems: 'center',
     elevation: 8,
     shadowColor: '#000',
