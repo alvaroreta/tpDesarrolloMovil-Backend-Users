@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
 //-- importa funciones de consulta y eliminación de datos de la BD
 import { collection, getDocs, doc, deleteDoc } from 'firebase/firestore';
 //- incopora logout de sesión actual
@@ -12,17 +13,20 @@ export default function Home({ navigation }) {
   const [productos, setProductos] = useState([]);
   const [fontsLoaded] = useFonts({ Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold });
 
-  useEffect(() => {
-    const cargar = async () => {
-      try {
-        const snap = await getDocs(collection(db, 'productos'));
-        setProductos(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
-      } catch (e) {
-        console.error('Error al cargar productos:', e.code, e.message);
-      }
-    };
-    cargar();
-  }, []);
+  //-- mantiene la pantalla de home actualizada por cada evento de cambio realizado en las pantallas de edición
+  useFocusEffect(
+    useCallback(() => {
+      const cargar = async () => {
+        try {
+          const snap = await getDocs(collection(db, 'productos'));
+          setProductos(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+        } catch (e) {
+          console.error('Error al cargar productos:', e.code, e.message);
+        }
+      };
+      cargar();
+    }, [])
+  );
 
   //- función flecha de cierre de sesión 
   const cerrarSesion = () => {
@@ -43,6 +47,7 @@ export default function Home({ navigation }) {
     ]);
   };
 
+  //-- función de eliminación de producto mediante dialogo de confirmación
   const eliminarProducto = (id) => {
     Alert.alert('Eliminar producto', '¿Estás seguro que deseas eliminar este producto?', [
       { text: 'Cancelar', style: 'cancel' },
@@ -71,7 +76,7 @@ export default function Home({ navigation }) {
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}>
-        {/* Car de productos que mapea el id de cada elemento desde la bd */}
+        {/* Carga de productos que mapea el id de cada elemento desde la bd */}
         {productos.map((producto) => (
           <View key={producto.id} style={styles.card}>
             {!!producto.imagen && <Image source={{ uri: producto.imagen }} style={styles.foto} />}
@@ -157,10 +162,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   foto: {
-    width: 56,
-    height: 56,
+    width: 72,
     borderRadius: 8,
     marginRight: 12,
+    alignSelf: 'stretch',
   },
   nombre: {
     fontSize: 16,

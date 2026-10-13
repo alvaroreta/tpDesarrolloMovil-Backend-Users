@@ -1,3 +1,4 @@
+//-- permite trabjar con la subida de imagenes a la base de datos mediante base64
 import * as ImagePicker from 'expo-image-picker';
 
 export const elegirImagenBase64 = async () => {
