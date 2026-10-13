@@ -50,19 +50,19 @@ export default function EditProfile({ route, navigation }) {
 
         <Text style={styles.label}>Nombre</Text>
         <View style={styles.inputContainer}>
-          <TextInput style={styles.input} value={nombre} onChangeText={setNombre} placeholder="Tu nombre" />
+          <TextInput style={styles.input} value={nombre} onChangeText={setNombre} placeholder="Ej. Juan" />
           <FontAwesome5 name="pen" size={16} color="#c25c32" style={styles.iconRight} />
         </View>
 
         <Text style={styles.label}>Apellido</Text>
         <View style={styles.inputContainer}>
-          <TextInput style={styles.input} value={apellido} onChangeText={setApellido} placeholder="Tu apellido" />
+          <TextInput style={styles.input} value={apellido} onChangeText={setApellido} placeholder="Ej. Pérez" />
           <FontAwesome5 name="pen" size={16} color="#c25c32" style={styles.iconRight} />
         </View>
 
         <Text style={styles.label}>Barrio</Text>
         <View style={styles.inputContainer}>
-          <TextInput style={styles.input} value={barrio} onChangeText={setBarrio} placeholder="Barrio" />
+          <TextInput style={styles.input} value={barrio} onChangeText={setBarrio} placeholder="Ej. Centro" />
           <FontAwesome5 name="pen" size={16} color="#c25c32" style={styles.iconRight} />
         </View>
 
@@ -70,14 +70,14 @@ export default function EditProfile({ route, navigation }) {
           <View style={{ flex: 2, marginRight: 10 }}>
             <Text style={styles.label}>Calle</Text>
             <View style={styles.inputContainer}>
-              <TextInput style={styles.input} value={calle} onChangeText={setCalle} placeholder="Calle" />
+              <TextInput style={styles.input} value={calle} onChangeText={setCalle} placeholder="Ej. Av. Belgrano" />
               <FontAwesome5 name="pen" size={16} color="#c25c32" style={styles.iconRight} />
             </View>
           </View>
           <View style={{ flex: 1 }}>
             <Text style={styles.label}>Altura</Text>
             <View style={styles.inputContainer}>
-              <TextInput style={styles.input} value={altura} onChangeText={setAltura} keyboardType="numeric" placeholder="N°" />
+              <TextInput style={styles.input} value={altura} onChangeText={setAltura} keyboardType="numeric" placeholder="Ej. 1234" />
               <FontAwesome5 name="pen" size={14} color="#c25c32" style={styles.iconRight} />
             </View>
           </View>
@@ -85,7 +85,7 @@ export default function EditProfile({ route, navigation }) {
 
         <Text style={styles.label}>Teléfono</Text>
         <View style={styles.inputContainer}>
-          <TextInput style={styles.input} value={telefono} onChangeText={setTelefono} keyboardType="phone-pad" placeholder="Número de celular" />
+          <TextInput style={styles.input} value={telefono} onChangeText={setTelefono} keyboardType="phone-pad" placeholder="Ej. 387123456" />
           <FontAwesome5 name="pen" size={16} color="#c25c32" style={styles.iconRight} />
         </View>
 

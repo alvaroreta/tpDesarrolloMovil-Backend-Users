@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { collection, getDocs } from 'firebase/firestore';
+//-- importa funciones de consulta y eliminación de datos de la BD
+import { collection, getDocs, doc, deleteDoc } from 'firebase/firestore';
 //- incopora logout de sesión actual
 import { signOut } from 'firebase/auth';
 import { auth, db } from '../src/config/firebaseConfig';
@@ -42,6 +43,25 @@ export default function Home({ navigation }) {
     ]);
   };
 
+  const eliminarProducto = (id) => {
+    Alert.alert('Eliminar producto', '¿Estás seguro que deseas eliminar este producto?', [
+      { text: 'Cancelar', style: 'cancel' },
+      {
+        text: 'Eliminar',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await deleteDoc(doc(db, 'productos', id));
+            setProductos((prev) => prev.filter((p) => p.id !== id));
+          } catch (e) {
+            console.error('Error al eliminar producto:', e.code, e.message);
+            Alert.alert('Error', 'No se pudo eliminar el producto.');
+          }
+        },
+      },
+    ]);
+  };
+
   if (!fontsLoaded) return null;
 
   return (
@@ -64,7 +84,7 @@ export default function Home({ navigation }) {
                 <TouchableOpacity style={[styles.boton, styles.botonEditar]} onPress={() => navigation.navigate('EditarProducto', { id: producto.id })}>
                   <Text style={styles.botonTexto}>Editar</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={[styles.boton, styles.botonEliminar]}>
+                <TouchableOpacity style={[styles.boton, styles.botonEliminar]} onPress={() => eliminarProducto(producto.id)}>
                   <Text style={styles.botonTexto}>Eliminar</Text>
                 </TouchableOpacity>
               </View>

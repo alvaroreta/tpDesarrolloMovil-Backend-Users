@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { auth } from '../src/config/firebaseConfig';
 
 export default function Profile({ navigation }) {
+  //  simulando la información del usuario
   const [userData, setUserData] = useState({
     email: auth.currentUser?.email || "nico@ejemplo.com",
     nombre: "Nico",
@@ -15,103 +15,69 @@ export default function Profile({ navigation }) {
     telefono: "387123456"
   });
 
-  const cerrarSesion = () => {
-    Alert.alert('Cerrar sesión', '¿Estás seguro que deseas cerrar sesión?', [
-      { text: 'Cancelar', style: 'cancel' },
-      {
-        text: 'Cerrar sesión',
-        style: 'destructive',
-        onPress: async () => {
-          try {
-            await auth.signOut();
-          } catch (error) {
-            console.error('Error al cerrar sesión: ', error);
-          }
-        },
-      },
-    ]);
+  const handleLogout = async () => {
+    try {
+      await auth.signOut();
+    } catch (error) {
+      console.error("Error al cerrar sesión: ", error);
+    }
   };
 
   return (
-    <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Text style={styles.title}>Perfil Usuario</Text>
+    <ScrollView contentContainerStyle={styles.container}>
+      <Text style={styles.title}>Perfil Usuario</Text>
 
-        <View style={styles.profileCard}>
-          <View style={styles.infoGroup}>
-            <Text style={styles.label}>Correo Electrónico</Text>
-            <Text style={styles.valueText}>{userData.email}</Text>
-          </View>
+      <View style={styles.profileCard}>
 
-          <View style={styles.infoGroup}>
-            <Text style={styles.label}>Nombre</Text>
-            <Text style={styles.valueText}>{userData.nombre}</Text>
-          </View>
-
-          <View style={styles.infoGroup}>
-            <Text style={styles.label}>Apellido</Text>
-            <Text style={styles.valueText}>{userData.apellido}</Text>
-          </View>
-
-          <View style={styles.infoGroup}>
-            <Text style={styles.label}>Cargo</Text>
-            <Text style={styles.valueText}>{userData.cargo}</Text>
-          </View>
-
-          <View style={styles.infoGroup}>
-            <Text style={styles.label}>Dirección</Text>
-            <Text style={styles.valueText}>{userData.calle} {userData.altura} (B° {userData.barrio})</Text>
-          </View>
-
-          <View style={styles.infoGroup}>
-            <Text style={styles.label}>Teléfono</Text>
-            <Text style={styles.valueText}>{userData.telefono}</Text>
-          </View>
+        <View style={styles.infoGroup}>
+          <Text style={styles.label}>Correo Electrónico</Text>
+          <Text style={styles.valueText}>{userData.email}</Text>
         </View>
 
-        <TouchableOpacity
-          style={styles.buttonPrimary}
-          onPress={() => navigation.navigate('EditProfile', { userData, setUserData })}
-        >
-          <Text style={styles.buttonText}>Editar Perfil</Text>
-        </TouchableOpacity>
+        <View style={styles.infoGroup}>
+          <Text style={styles.label}>Nombre</Text>
+          <Text style={styles.valueText}>{userData.nombre}</Text>
+        </View>
 
-        <TouchableOpacity style={styles.buttonSecondary} onPress={cerrarSesion}>
-          <Text style={styles.buttonTextSecondary}>Cerrar Sesión</Text>
-        </TouchableOpacity>
-      </ScrollView>
+        <View style={styles.infoGroup}>
+          <Text style={styles.label}>Apellido</Text>
+          <Text style={styles.valueText}>{userData.apellido}</Text>
+        </View>
 
-      <View style={styles.bottomMenu}>
-        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Home')}>
-          <Ionicons name="home" size={22} color="#ffffffff" />
-        </TouchableOpacity>
+        <View style={styles.infoGroup}>
+          <Text style={styles.label}>Cargo</Text>
+          <Text style={styles.valueText}>{userData.cargo}</Text>
+        </View>
 
-        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('AgregarProducto')}>
-          <Ionicons name="cube-outline" size={25} color="#ffffffff" />
-        </TouchableOpacity>
+        <View style={styles.infoGroup}>
+          <Text style={styles.label}>Dirección</Text>
+          <Text style={styles.valueText}>{userData.calle} {userData.altura} (B° {userData.barrio})</Text>
+        </View>
 
-        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Profile')}>
-          <Ionicons name="person-outline" size={25} color="#ffffffff" />
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('InfoEmpresa')}>
-          <Ionicons name="information-circle-outline" size={30} color="#ffffffff" />
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.menuItem} onPress={cerrarSesion}>
-          <Ionicons name="log-out-outline" size={30} color="#ffffffff" />
-        </TouchableOpacity>
+        <View style={styles.infoGroup}>
+          <Text style={styles.label}>Teléfono</Text>
+          <Text style={styles.valueText}>{userData.telefono}</Text>
+        </View>
       </View>
-    </View>
+
+      <TouchableOpacity
+        style={styles.buttonPrimary}
+        onPress={() => navigation.navigate('EditProfile', { userData, setUserData })}
+      >
+        <Text style={styles.buttonText}>Editar Perfil</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.buttonSecondary} onPress={handleLogout}>
+        <Text style={styles.buttonTextSecondary}>Cerrar Sesión</Text>
+      </TouchableOpacity>
+
+
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#ffffff',
-  },
-  scrollContent: {
     flexGrow: 1,
     backgroundColor: '#ffffff',
     padding: 20,
@@ -179,26 +145,5 @@ const styles = StyleSheet.create({
     color: '#313131',
     fontSize: 16,
     fontFamily: 'Poppins_600SemiBold',
-  },
-  bottomMenu: {
-    height: 65,
-    backgroundColor: '#f9682b',
-    borderTopWidth: 1,
-    borderTopColor: '#e0e0e0',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 25,
-    alignItems: 'center',
-    elevation: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -3 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-  },
-  menuItem: {
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 });

@@ -3,11 +3,12 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityInd
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db, auth } from '../src/config/firebaseConfig';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function EditarProducto({ route, navigation }) {
   const { id } = route.params; // Recibimos el id correctamente
-  const [nombre, setNombre] = useState('');
-  const [stock, setStock] = useState('');
+  const [campos, setCampos] = useState({});
+  const [original, setOriginal] = useState({});
   const [loading, setLoading] = useState(true);
   const [guardando, setGuardando] = useState(false);
 
@@ -18,8 +19,12 @@ export default function EditarProducto({ route, navigation }) {
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           const data = docSnap.data();
-          setNombre(data.nombre || '');
-          setStock(data.stock ? String(data.stock) : '');
+          const inicial = {};
+          Object.entries(data).forEach(([clave, valor]) => {
+            inicial[clave] = valor !== null && typeof valor === 'object' ? JSON.stringify(valor) : String(valor);
+          });
+          setCampos(inicial);
+          setOriginal(data);
         }
       } catch (error) {
         console.error("Error al cargar producto para editar:", error);
@@ -48,19 +53,15 @@ export default function EditarProducto({ route, navigation }) {
     ]);
   };
 
-  const actualizarProducto = async () => {
-    if (!nombre.trim() || !stock.trim()) {
-      Alert.alert('Error', 'Por favor completa todos los campos.');
-      return;
-    }
-
+  const guardarCambios = async () => {
     setGuardando(true);
     try {
-      const docRef = doc(db, 'productos', id);
-      await updateDoc(docRef, {
-        nombre: nombre.trim(),
-        stock: Number(stock),
+      const actualizado = {};
+      Object.keys(campos).forEach((clave) => {
+        actualizado[clave] = typeof original[clave] === 'number' ? Number(campos[clave]) : campos[clave];
       });
+      const docRef = doc(db, 'productos', id);
+      await updateDoc(docRef, actualizado);
       Alert.alert('Éxito', 'Producto actualizado correctamente', [
         { text: 'OK', onPress: () => navigation.goBack() }
       ]);
@@ -70,6 +71,19 @@ export default function EditarProducto({ route, navigation }) {
     } finally {
       setGuardando(false);
     }
+  };
+
+  const confirmarGuardar = () => {
+    //-- Variable y condicionante para chequear que no existe ningún campo vacio
+    const hayVacio = Object.values(campos).some((valor) => String(valor).trim() === '');
+    if (hayVacio) {
+      Alert.alert('Error', 'Ningún campo puede quedar vacío.');
+      return;
+    }
+    Alert.alert('Guardar cambios', '¿Estás seguro que deseas guardar los cambios?', [
+      { text: 'Cancelar', style: 'cancel' },
+      { text: 'Guardar', onPress: guardarCambios },
+    ]);
   };
 
   if (loading) {
@@ -85,29 +99,34 @@ export default function EditarProducto({ route, navigation }) {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <Text style={styles.titulo}>Editar Producto</Text>
 
-        <Text style={styles.label}>Nombre del producto</Text>
-        <TextInput
-          style={styles.input}
-          value={nombre}
-          onChangeText={setNombre}
-          placeholder="Ej. Comino"
-        />
+        {Object.keys(campos).map((clave) => (
+          <View key={clave}>
+            <Text style={styles.label}>{clave.charAt(0).toUpperCase() + clave.slice(1)}</Text>
+            <TextInput
+              style={styles.input}
+              value={campos[clave]}
+              onChangeText={(texto) => setCampos((prev) => ({ ...prev, [clave]: texto }))}
+              keyboardType={typeof original[clave] === 'number' ? 'numeric' : 'default'}
+            />
+          </View>
+        ))}
 
-        <Text style={styles.label}>Stock</Text>
-        <TextInput
-          style={styles.input}
-          value={stock}
-          onChangeText={setStock}
-          keyboardType="numeric"
-          placeholder="Ej. 50"
-        />
+        <TouchableOpacity style={styles.buttonWrapper} onPress={confirmarGuardar} disabled={guardando}>
+          <LinearGradient
+            colors={['#ff7a00', '#b3491c']}
+            style={styles.button}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+          ><Text style={styles.buttonText}>{guardando ? 'Guardando...' : 'Guardar Cambios'}</Text></LinearGradient>
+        </TouchableOpacity>
 
-        <TouchableOpacity 
-          style={[styles.botonGuardar, guardando && { opacity: 0.7 }]} 
-          onPress={actualizarProducto}
-          disabled={guardando}
-        >
-          <Text style={styles.botonTexto}>{guardando ? 'Guardando...' : 'Guardar Cambios'}</Text>
+        <TouchableOpacity style={styles.buttonWrapper} onPress={() => navigation.goBack()}>
+          <LinearGradient
+            colors={['#b69e90', '#b69e90']}
+            style={styles.button}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+          ><Text style={styles.buttonText}>Volver</Text></LinearGradient>
         </TouchableOpacity>
       </ScrollView>
 
@@ -143,8 +162,25 @@ const styles = StyleSheet.create({
   titulo: { fontSize: 22, fontWeight: 'bold', marginBottom: 20, color: '#313131', textAlign: 'center' },
   label: { fontSize: 14, color: '#666', marginBottom: 5, marginTop: 10 },
   input: { borderWidth: 1, borderColor: '#ccc', borderRadius: 8, padding: 12, fontSize: 16, backgroundColor: '#f9f9f9' },
-  botonGuardar: { backgroundColor: '#f9682b', padding: 15, borderRadius: 8, alignItems: 'center', marginTop: 25 },
-  botonTexto: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
+  buttonWrapper: {
+    marginTop: 20,
+    borderRadius: 8,
+    overflow: 'hidden',
+    width: '100%',
+    alignItems: 'center',
+  },
+  button: {
+    width: '100%',
+    paddingVertical: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 100,
+  },
+  buttonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontFamily: 'Poppins_600SemiBold',
+  },
   bottomMenu: {
     height: 65,
     backgroundColor: '#f9682b',

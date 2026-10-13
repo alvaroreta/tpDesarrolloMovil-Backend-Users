@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity, ScrollView
 import { doc, getDoc } from 'firebase/firestore';
 import { db, auth } from '../src/config/firebaseConfig';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function VerProducto({ route, navigation }) {
   const { id } = route.params; // Recibimos el id correctamente
@@ -53,6 +54,7 @@ export default function VerProducto({ route, navigation }) {
   }
 
   if (!producto) {
+    //--Alerta en caso de no encontrar el producto en la bd
     return (
       <View style={styles.center}>
         <Text>No se encontró el producto.</Text>
@@ -64,18 +66,28 @@ export default function VerProducto({ route, navigation }) {
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <Text style={styles.titulo}>Detalle del Producto</Text>
-        
-        <View style={styles.card}>
-          <Text style={styles.label}>Nombre:</Text>
-          <Text style={styles.valor}>{producto.nombre}</Text>
 
-          <Text style={styles.label}>Stock:</Text>
-          <Text style={styles.valor}>{producto.stock}</Text>
+        <View style={styles.card}>
+          {/*Mapea todos los atributos de los productos según su key*/}
+          {Object.entries(producto).map(([clave, valor]) => (
+            <View key={clave}>
+              <Text style={styles.label}>
+                {clave.charAt(0).toUpperCase() + clave.slice(1)}:
+              </Text>
+              <Text style={styles.valor}>
+                {valor !== null && typeof valor === 'object' ? JSON.stringify(valor) : String(valor)}
+              </Text>
+            </View>
+          ))}
         </View>
 
-        <TouchableOpacity style={styles.botonVolver} onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={20} color="#fff" />
-          <Text style={styles.botonTexto}> Volver</Text>
+        <TouchableOpacity style={styles.buttonWrapper} onPress={() => navigation.goBack()}>
+          <LinearGradient
+            colors={['#b69e90', '#b69e90']}
+            style={styles.button}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+          ><Text style={styles.buttonText}>Volver</Text></LinearGradient>
         </TouchableOpacity>
       </ScrollView>
 
@@ -112,8 +124,25 @@ const styles = StyleSheet.create({
   card: { borderWidth: 1, borderColor: '#e0e0e0', borderRadius: 12, padding: 20, backgroundColor: '#f9f9f9', marginBottom: 20 },
   label: { fontSize: 14, color: '#666', marginTop: 10 },
   valor: { fontSize: 18, fontWeight: '600', color: '#313131', marginTop: 2 },
-  botonVolver: { flexDirection: 'row', backgroundColor: '#f9682b', padding: 12, borderRadius: 8, justifyContent: 'center', alignItems: 'center' },
-  botonTexto: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
+  buttonWrapper: {
+    marginTop: 20,
+    borderRadius: 8,
+    overflow: 'hidden',
+    width: '100%',
+    alignItems: 'center',
+  },
+  button: {
+    width: '100%',
+    paddingVertical: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 100,
+  },
+  buttonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontFamily: 'Poppins_600SemiBold',
+  },
   bottomMenu: {
     height: 65,
     backgroundColor: '#f9682b',

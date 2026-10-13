@@ -164,7 +164,7 @@ export default function SignUp({ navigation }) {
         <FontAwesome name="user" size={20} color="#ccc" style={styles.icon} />
         <TextInput
           style={styles.input}
-          placeholder="Ingrese su nombre"
+          placeholder="Ej. Juan"
           value={firstName}
           onChangeText={setFirstName}
         />
@@ -175,7 +175,7 @@ export default function SignUp({ navigation }) {
         <FontAwesome name="user" size={20} color="#ccc" style={styles.icon} />
         <TextInput
           style={styles.input}
-          placeholder="Ingrese su apellido"
+          placeholder="Ej. Pérez"
           value={lastName}
           onChangeText={setLastName}
         />
@@ -186,7 +186,7 @@ export default function SignUp({ navigation }) {
         <FontAwesome name="envelope" size={20} color="#ccc" style={styles.icon} />
         <TextInput
           style={styles.input}
-          placeholder="Ingrese su correo"
+          placeholder="Ej. juan@correo.com"
           value={email}
           onChangeText={setEmail}
           keyboardType="email-address"
@@ -201,8 +201,8 @@ export default function SignUp({ navigation }) {
         activeOpacity={0.7}
       >
         <FontAwesome name="user" size={20} color="#ccc" style={styles.icon} />
-        <Text style={cargo ? styles.input : styles.placeholder}>
-          {cargo || 'Seleccione su cargo'}
+        <Text style={cargo ? styles.cargoText : styles.placeholder}>
+          {cargo || 'Ej. Analista QA'}
         </Text>
         <FontAwesome name="chevron-down" size={16} color="#ccc" />
       </TouchableOpacity>
@@ -245,7 +245,7 @@ export default function SignUp({ navigation }) {
         <FontAwesome name="user" size={20} color="#ccc" style={styles.icon} />
         <TextInput
           style={styles.input}
-          placeholder="Ingrese su barrio"
+          placeholder="Ej. Centro"
           value={barrio}
           onChangeText={setBarrio}
         />
@@ -257,7 +257,7 @@ export default function SignUp({ navigation }) {
         <FontAwesome name="user" size={20} color="#ccc" style={styles.icon} />
         <TextInput
           style={styles.input}
-          placeholder="Ingrese su Calle"
+          placeholder="Ej. Av. Belgrano"
           value={calle}
           onChangeText={setCalle}
         />
@@ -268,7 +268,7 @@ export default function SignUp({ navigation }) {
         <FontAwesome name="user" size={20} color="#ccc" style={styles.icon} />
         <TextInput
           style={styles.input}
-          placeholder="Ingrese la altura"
+          placeholder="Ej. 1234"
           value={altura}
           onChangeText={setAltura}
           keyboardType="numeric"
@@ -281,7 +281,7 @@ export default function SignUp({ navigation }) {
         <FontAwesome name="user" size={20} color="#ccc" style={styles.icon} />
         <TextInput
           style={styles.input}
-          placeholder="Ingrese su telefóno"
+          placeholder="Ej. 387123456"
           value={telefono}
           onChangeText={setTelefono}
           keyboardType="phone-pad"
@@ -293,7 +293,7 @@ export default function SignUp({ navigation }) {
         <FontAwesome name="lock" size={20} color="#ccc" style={styles.icon} />
         <TextInput
           style={styles.input}
-          placeholder="Ingrese su contraseña"
+          placeholder="Ej. Clave123"
           value={password}
           onChangeText={setPassword}
           secureTextEntry={!showPassword}
@@ -308,7 +308,7 @@ export default function SignUp({ navigation }) {
         <FontAwesome name="lock" size={20} color="#ccc" style={styles.icon} />
         <TextInput
           style={styles.input}
-          placeholder="Confirme su contraseña"
+          placeholder="Ej. Clave123"
           value={confirmPassword}
           onChangeText={setConfirmPassword}
           secureTextEntry={!showConfirmPassword}
@@ -397,6 +397,15 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins_400Regular',
     fontSize: 12,
     color: '#999',
+  },
+  cargoText: {
+    flex: 1,
+    height: 40,
+    fontFamily: 'Poppins_400Regular',
+    fontSize: 12,
+    color: '#313131',
+    lineHeight: 40,
+    textAlignVertical: 'center',
   },
   modalOverlay: {
     flex: 1,
