@@ -7,6 +7,10 @@ import { auth, isFirebaseConfigured } from '../src/config/firebaseConfig';
 import Login from '../screens/Login';
 import SignUp from '../screens/SignUp';
 import Home from '../screens/Home';
+import Profile from '../screens/Profile';
+import EditProfile from '../screens/EditProfile';
+import VerProducto from '../screens/VerProducto';
+import EditarProducto from '../screens/EditarProducto';
 
 const Stack = createStackNavigator();
 
@@ -36,20 +40,42 @@ export default function Navigation() {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerMode: 'float' }}>
         {user ? (
-          <Stack.Screen
-            name="Home"
-            component={Home}
-            options={{
-              headerTitleAlign: 'center',
-              headerTitle: () => (
-                <Image
-                  source={require('../assets/logo_sa/icon.png')}
-                  style={styles.headerLogo}
-                  resizeMode="contain"
-                />
-              ),
-            }}
-          />
+          <>
+            <Stack.Screen
+              name="Home"
+              component={Home}
+              options={{
+                headerTitleAlign: 'center',
+                headerTitle: () => (
+                  <Image
+                    source={require('../assets/logo_sa/icon.png')}
+                    style={styles.headerLogo}
+                    resizeMode="contain"
+                  />
+                ),
+              }}
+            />
+            <Stack.Screen
+              name="Profile"
+              component={Profile}
+              options={{ title: 'Mi Perfil', headerTintColor: '#c25c32' }}
+            />
+            <Stack.Screen
+              name="EditProfile"
+              component={EditProfile}
+              options={{ title: 'Editar Perfil', headerTintColor: '#c25c32' }}
+            />
+            <Stack.Screen
+              name="VerProducto"
+              component={VerProducto}
+              options={{ title: 'Ver Producto', headerTintColor: '#c25c32' }}
+            />
+            <Stack.Screen
+              name="EditarProducto"
+              component={EditarProducto}
+              options={{ title: 'Editar Producto', headerTintColor: '#c25c32' }}
+            />
+          </>
         ) : (
           <>
             <Stack.Screen name="Login" component={Login} options={{ title: 'Iniciar sesión' }} />

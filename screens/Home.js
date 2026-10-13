@@ -58,10 +58,10 @@ export default function Home({ navigation }) {
               <Text style={styles.nombre}>{producto.nombre}</Text>
               <Text style={styles.stock}>Stock: {producto.stock}</Text>
               <View style={styles.acciones}>
-                <TouchableOpacity style={[styles.boton, styles.botonVer]}>
+                <TouchableOpacity style={[styles.boton, styles.botonVer]} onPress={() => navigation.navigate('VerProducto', { id: producto.id })}>
                   <Text style={styles.botonTexto}>Ver</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={[styles.boton, styles.botonEditar]}>
+                <TouchableOpacity style={[styles.boton, styles.botonEditar]} onPress={() => navigation.navigate('EditarProducto', { id: producto.id })}>
                   <Text style={styles.botonTexto}>Editar</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={[styles.boton, styles.botonEliminar]}>
@@ -82,7 +82,7 @@ export default function Home({ navigation }) {
           <Ionicons name="cube-outline" size={25} color="#ffffffff" />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Perfil')}>
+        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Profile')}>
           <Ionicons name="person-outline" size={25} color="#ffffffff" />
         </TouchableOpacity>
 
