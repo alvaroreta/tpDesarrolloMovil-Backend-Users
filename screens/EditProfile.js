@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, Alert, Image } from 'react-native';
 import { FontAwesome5, Ionicons } from '@expo/vector-icons';
-import { auth } from '../src/config/firebaseConfig';
+import { doc, updateDoc } from 'firebase/firestore';
+import { auth, db } from '../src/config/firebaseConfig';
+import { elegirImagenBase64 } from '../src/utils/imagenes';
 
 export default function EditProfile({ route, navigation }) {
   const { userData, setUserData } = route.params;
@@ -12,18 +14,37 @@ export default function EditProfile({ route, navigation }) {
   const [calle, setCalle] = useState(userData.calle);
   const [altura, setAltura] = useState(userData.altura);
   const [telefono, setTelefono] = useState(userData.telefono);
+  const [foto, setFoto] = useState(userData.foto || '');
 
-  const handleSave = () => {
-    setUserData({
+  const handleSave = async () => {
+    const actualizado = {
       ...userData,
       nombre,
       apellido,
       barrio,
       calle,
       altura,
-      telefono
-    });
-    navigation.goBack();
+      telefono,
+      foto
+    };
+    setUserData(actualizado);
+    try {
+      if (auth.currentUser) {
+        await updateDoc(doc(db, 'usuarios', auth.currentUser.uid), {
+          nombre,
+          apellido,
+          barrio,
+          calle,
+          altura,
+          telefono,
+          foto,
+        });
+      }
+      navigation.goBack();
+    } catch (error) {
+      console.error('Error al guardar el perfil:', error);
+      Alert.alert('Error', 'No se pudo guardar el perfil.');
+    }
   };
 
   const cerrarSesion = () => {
@@ -47,6 +68,25 @@ export default function EditProfile({ route, navigation }) {
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <Text style={styles.title}>Editar Perfil</Text>
+
+        <TouchableOpacity
+          style={styles.avatarContainer}
+          activeOpacity={0.8}
+          onPress={async () => {
+            try {
+              const b64 = await elegirImagenBase64();
+              if (b64) setFoto(b64);
+            } catch (error) {
+              Alert.alert('Error', 'No se pudo seleccionar la imagen.');
+            }
+          }}
+        >
+          {foto ? (
+            <Image source={{ uri: foto }} style={styles.avatar} />
+          ) : (
+            <Ionicons name="camera" size={32} color="#c25c32" />
+          )}
+        </TouchableOpacity>
 
         <Text style={styles.label}>Nombre</Text>
         <View style={styles.inputContainer}>
@@ -136,6 +176,23 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     color: '#313131',
     alignSelf: 'center',
+  },
+  avatarContainer: {
+    width: 110,
+    height: 110,
+    borderRadius: 55,
+    borderWidth: 2,
+    borderColor: '#c25c32',
+    backgroundColor: '#ffffff',
+    alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 10,
+    overflow: 'hidden',
+  },
+  avatar: {
+    width: '100%',
+    height: '100%',
   },
   label: {
     alignSelf: 'flex-start',

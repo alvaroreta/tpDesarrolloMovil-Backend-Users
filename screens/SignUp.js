@@ -7,6 +7,7 @@ import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFonts, Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold } from '@expo-google-fonts/poppins';
+import { elegirImagenBase64 } from '../src/utils/imagenes';
 
 //- lista de cargos para la optionbar de creación de cuentas
 const CARGOS = [
@@ -34,6 +35,7 @@ export default function SignUp({ navigation }) {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [foto, setFoto] = useState('');
 
 
   const handleSignUp = async () => {
@@ -134,6 +136,7 @@ export default function SignUp({ navigation }) {
         calle: calle.trim(),
         altura: altura.trim(),
         telefono: telefono.trim(),
+        foto: foto,
         creado: new Date().toISOString()
       });
       Alert.alert("Registro exitoso", "Usuario registrado con éxito.");
@@ -157,186 +160,209 @@ export default function SignUp({ navigation }) {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-      <Image source={require('../assets/logo_sa/icon.png')} style={styles.logo} />
+        <Image source={require('../assets/logo_sa/icon.png')} style={styles.logo} />
 
-      <Text style={styles.label}>Nombre</Text>
-      <View style={styles.inputContainer}>
-        <FontAwesome name="user" size={20} color="#ccc" style={styles.icon} />
-        <TextInput
-          style={styles.input}
-          placeholder="Ej. Juan"
-          value={firstName}
-          onChangeText={setFirstName}
-        />
-      </View>
 
-      <Text style={styles.label}>Apellido</Text>
-      <View style={styles.inputContainer}>
-        <FontAwesome name="user" size={20} color="#ccc" style={styles.icon} />
-        <TextInput
-          style={styles.input}
-          placeholder="Ej. Pérez"
-          value={lastName}
-          onChangeText={setLastName}
-        />
-      </View>
 
-      <Text style={styles.label}>Correo</Text>
-      <View style={styles.inputContainer}>
-        <FontAwesome name="envelope" size={20} color="#ccc" style={styles.icon} />
-        <TextInput
-          style={styles.input}
-          placeholder="Ej. juan@correo.com"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
-      </View>
+        <Text style={styles.label}>Nombre</Text>
+        <View style={styles.inputContainer}>
+          <FontAwesome name="user" size={20} color="#ccc" style={styles.icon} />
+          <TextInput
+            style={styles.input}
+            placeholder="Ej. Juan"
+            value={firstName}
+            onChangeText={setFirstName}
+          />
+        </View>
 
-      <Text style={styles.label}>Cargo</Text>
-      <TouchableOpacity
-        style={styles.inputContainer}
-        onPress={() => setShowCargoOptions(true)}
-        activeOpacity={0.7}
-      >
-        <FontAwesome name="user" size={20} color="#ccc" style={styles.icon} />
-        <Text style={cargo ? styles.cargoText : styles.placeholder}>
-          {cargo || 'Ej. Analista QA'}
-        </Text>
-        <FontAwesome name="chevron-down" size={16} color="#ccc" />
-      </TouchableOpacity>
+        <Text style={styles.label}>Apellido</Text>
+        <View style={styles.inputContainer}>
+          <FontAwesome name="user" size={20} color="#ccc" style={styles.icon} />
+          <TextInput
+            style={styles.input}
+            placeholder="Ej. Pérez"
+            value={lastName}
+            onChangeText={setLastName}
+          />
+        </View>
 
-      <Modal
-        visible={showCargoOptions}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setShowCargoOptions(false)}
-      >
+        <Text style={styles.label}>Correo</Text>
+        <View style={styles.inputContainer}>
+          <FontAwesome name="envelope" size={20} color="#ccc" style={styles.icon} />
+          <TextInput
+            style={styles.input}
+            placeholder="Ej. juan@correo.com"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
+        </View>
+
+        <Text style={styles.label}>Cargo</Text>
         <TouchableOpacity
-          style={styles.modalOverlay}
-          activeOpacity={1}
-          onPress={() => setShowCargoOptions(false)}
+          style={styles.inputContainer}
+          onPress={() => setShowCargoOptions(true)}
+          activeOpacity={0.7}
         >
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Seleccione su cargo</Text>
-            {/* La lista de cargos harcodeadas nos permite persisitir los datos a fin de poder unificar los datos entrados por el usuario */}
-            {CARGOS.map((opcion) => (
-              <TouchableOpacity
-                key={opcion}
-                style={styles.modalOption}
-                onPress={() => {
-                  setCargo(opcion);
-                  setShowCargoOptions(false);
-                }}
-              >
-                <Text style={[styles.modalOptionText, cargo === opcion && styles.modalOptionTextSelected]}>
-                  {opcion}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+          <FontAwesome name="user" size={20} color="#ccc" style={styles.icon} />
+          <Text style={cargo ? styles.cargoText : styles.placeholder}>
+            {cargo || 'Ej. Analista QA'}
+          </Text>
+          <FontAwesome name="chevron-down" size={16} color="#ccc" />
         </TouchableOpacity>
-      </Modal>
+
+        <Modal
+          visible={showCargoOptions}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setShowCargoOptions(false)}
+        >
+          <TouchableOpacity
+            style={styles.modalOverlay}
+            activeOpacity={1}
+            onPress={() => setShowCargoOptions(false)}
+          >
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Seleccione su cargo</Text>
+              {/* La lista de cargos harcodeadas nos permite persisitir los datos a fin de poder unificar los datos entrados por el usuario */}
+              {CARGOS.map((opcion) => (
+                <TouchableOpacity
+                  key={opcion}
+                  style={styles.modalOption}
+                  onPress={() => {
+                    setCargo(opcion);
+                    setShowCargoOptions(false);
+                  }}
+                >
+                  <Text style={[styles.modalOptionText, cargo === opcion && styles.modalOptionTextSelected]}>
+                    {opcion}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </TouchableOpacity>
+        </Modal>
 
 
-      <Text style={styles.label}>Barrio</Text>
-      <View style={styles.inputContainer}>
-        <FontAwesome name="user" size={20} color="#ccc" style={styles.icon} />
-        <TextInput
-          style={styles.input}
-          placeholder="Ej. Centro"
-          value={barrio}
-          onChangeText={setBarrio}
-        />
-      </View>
+        <Text style={styles.label}>Barrio</Text>
+        <View style={styles.inputContainer}>
+          <FontAwesome name="user" size={20} color="#ccc" style={styles.icon} />
+          <TextInput
+            style={styles.input}
+            placeholder="Ej. Centro"
+            value={barrio}
+            onChangeText={setBarrio}
+          />
+        </View>
 
 
-      <Text style={styles.label}>Calle</Text>
-      <View style={styles.inputContainer}>
-        <FontAwesome name="user" size={20} color="#ccc" style={styles.icon} />
-        <TextInput
-          style={styles.input}
-          placeholder="Ej. Av. Belgrano"
-          value={calle}
-          onChangeText={setCalle}
-        />
-      </View>
+        <Text style={styles.label}>Calle</Text>
+        <View style={styles.inputContainer}>
+          <FontAwesome name="user" size={20} color="#ccc" style={styles.icon} />
+          <TextInput
+            style={styles.input}
+            placeholder="Ej. Av. Belgrano"
+            value={calle}
+            onChangeText={setCalle}
+          />
+        </View>
 
-      <Text style={styles.label}>Altura</Text>
-      <View style={styles.inputContainer}>
-        <FontAwesome name="user" size={20} color="#ccc" style={styles.icon} />
-        <TextInput
-          style={styles.input}
-          placeholder="Ej. 1234"
-          value={altura}
-          onChangeText={setAltura}
-          keyboardType="numeric"
-        />
-      </View>
+        <Text style={styles.label}>Altura</Text>
+        <View style={styles.inputContainer}>
+          <FontAwesome name="user" size={20} color="#ccc" style={styles.icon} />
+          <TextInput
+            style={styles.input}
+            placeholder="Ej. 1234"
+            value={altura}
+            onChangeText={setAltura}
+            keyboardType="numeric"
+          />
+        </View>
 
 
-      <Text style={styles.label}>Telefono</Text>
-      <View style={styles.inputContainer}>
-        <FontAwesome name="user" size={20} color="#ccc" style={styles.icon} />
-        <TextInput
-          style={styles.input}
-          placeholder="Ej. 387123456"
-          value={telefono}
-          onChangeText={setTelefono}
-          keyboardType="phone-pad"
-        />
-      </View>
+        <Text style={styles.label}>Telefono</Text>
+        <View style={styles.inputContainer}>
+          <FontAwesome name="user" size={20} color="#ccc" style={styles.icon} />
+          <TextInput
+            style={styles.input}
+            placeholder="Ej. 387123456"
+            value={telefono}
+            onChangeText={setTelefono}
+            keyboardType="phone-pad"
+          />
+        </View>
 
-      <Text style={styles.label}>Contraseña</Text>
-      <View style={styles.inputContainer}>
-        <FontAwesome name="lock" size={20} color="#ccc" style={styles.icon} />
-        <TextInput
-          style={styles.input}
-          placeholder="Ej. Clave123"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry={!showPassword}
-        />
-        <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-          <FontAwesome name={showPassword ? "eye-slash" : "eye"} size={20} color="#ccc" />
+        <Text style={styles.label}>Contraseña</Text>
+        <View style={styles.inputContainer}>
+          <FontAwesome name="lock" size={20} color="#ccc" style={styles.icon} />
+          <TextInput
+            style={styles.input}
+            placeholder="Ej. Clave123"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry={!showPassword}
+          />
+          <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+            <FontAwesome name={showPassword ? "eye-slash" : "eye"} size={20} color="#ccc" />
+          </TouchableOpacity>
+        </View>
+
+        <Text style={styles.label}>Confirmar Contraseña</Text>
+        <View style={styles.inputContainer}>
+          <FontAwesome name="lock" size={20} color="#ccc" style={styles.icon} />
+          <TextInput
+            style={styles.input}
+            placeholder="Ej. Clave123"
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+            secureTextEntry={!showConfirmPassword}
+          />
+
+          <TouchableOpacity onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
+            <FontAwesome name={showConfirmPassword ? "eye-slash" : "eye"} size={20} color="#ccc" />
+          </TouchableOpacity>
+        </View>
+        <TouchableOpacity
+          style={styles.avatarContainer}
+          activeOpacity={0.8}
+          onPress={async () => {
+            try {
+              const b64 = await elegirImagenBase64();
+              if (b64) setFoto(b64);
+            } catch (error) {
+              Alert.alert('Error', 'No se pudo seleccionar la imagen.');
+            }
+          }}
+        >
+          {foto ? (
+            <Image source={{ uri: foto }} style={styles.avatar} />
+          ) : (
+            <>
+              <FontAwesome name="camera" size={24} color="#c25c32" />
+              <Text style={styles.avatarText}>Subir foto</Text>
+            </>
+          )}
         </TouchableOpacity>
-      </View>
-
-      <Text style={styles.label}>Confirmar Contraseña</Text>
-      <View style={styles.inputContainer}>
-        <FontAwesome name="lock" size={20} color="#ccc" style={styles.icon} />
-        <TextInput
-          style={styles.input}
-          placeholder="Ej. Clave123"
-          value={confirmPassword}
-          onChangeText={setConfirmPassword}
-          secureTextEntry={!showConfirmPassword}
-        />
-        <TouchableOpacity onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
-          <FontAwesome name={showConfirmPassword ? "eye-slash" : "eye"} size={20} color="#ccc" />
+        <TouchableOpacity style={styles.buttonWrapper} onPress={handleSignUp}>
+          <LinearGradient
+            colors={['#ff7a00', '#b3491c']}
+            style={styles.button}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+          ><Text style={styles.buttonText}>Crear Cuenta</Text></LinearGradient>
         </TouchableOpacity>
-      </View>
 
-      <TouchableOpacity style={styles.buttonWrapper} onPress={handleSignUp}>
-        <LinearGradient
-          colors={['#ff7a00', '#b3491c']}
-          style={styles.button}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-        ><Text style={styles.buttonText}>Crear Cuenta</Text></LinearGradient>
-      </TouchableOpacity>
+        <TouchableOpacity style={styles.buttonWrapper} onPress={() => navigation.navigate('Login')}>
+          <LinearGradient
+            colors={['#b69e90', '#b69e90']}
+            style={styles.button}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+          ><Text style={styles.buttonText}>Volver</Text></LinearGradient>
+        </TouchableOpacity>
 
-      <TouchableOpacity style={styles.buttonWrapper} onPress={() => navigation.navigate('Login')}>
-        <LinearGradient
-          colors={['#b69e90', '#b69e90']}
-          style={styles.button}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-        ><Text style={styles.buttonText}>Volver</Text></LinearGradient>
-      </TouchableOpacity>
-
-    </ScrollView >
+      </ScrollView >
     </KeyboardAvoidingView>
   );
 }
@@ -356,6 +382,28 @@ const styles = StyleSheet.create({
     width: 180,
     height: 100,
     marginBottom: 20,
+  },
+  avatarContainer: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    borderWidth: 2,
+    borderColor: '#c25c32',
+    backgroundColor: '#ffffff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
+    overflow: 'hidden',
+  },
+  avatar: {
+    width: '100%',
+    height: '100%',
+  },
+  avatarText: {
+    fontFamily: 'Poppins_400Regular',
+    fontSize: 12,
+    color: '#c25c32',
+    marginTop: 4,
   },
   title: {
     fontFamily: 'Poppins_700Bold',

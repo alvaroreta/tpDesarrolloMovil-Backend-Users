@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity, ScrollView, Alert, Image } from 'react-native';
 import { doc, getDoc } from 'firebase/firestore';
 import { db, auth } from '../src/config/firebaseConfig';
 import { Ionicons } from '@expo/vector-icons';
@@ -67,18 +67,22 @@ export default function VerProducto({ route, navigation }) {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <Text style={styles.titulo}>Detalle del Producto</Text>
 
+        {!!producto.imagen && <Image source={{ uri: producto.imagen }} style={styles.preview} />}
+
         <View style={styles.card}>
           {/*Mapea todos los atributos de los productos según su key*/}
-          {Object.entries(producto).map(([clave, valor]) => (
-            <View key={clave}>
-              <Text style={styles.label}>
-                {clave.charAt(0).toUpperCase() + clave.slice(1)}:
-              </Text>
-              <Text style={styles.valor}>
-                {valor !== null && typeof valor === 'object' ? JSON.stringify(valor) : String(valor)}
-              </Text>
-            </View>
-          ))}
+          {Object.entries(producto)
+            .filter(([clave]) => clave !== 'imagen')
+            .map(([clave, valor]) => (
+              <View key={clave}>
+                <Text style={styles.label}>
+                  {clave.charAt(0).toUpperCase() + clave.slice(1)}:
+                </Text>
+                <Text style={styles.valor}>
+                  {valor !== null && typeof valor === 'object' ? JSON.stringify(valor) : String(valor)}
+                </Text>
+              </View>
+            ))}
         </View>
 
         <TouchableOpacity style={styles.buttonWrapper} onPress={() => navigation.goBack()}>
@@ -122,6 +126,7 @@ const styles = StyleSheet.create({
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   titulo: { fontSize: 22, fontWeight: 'bold', marginBottom: 20, color: '#313131', textAlign: 'center' },
   card: { borderWidth: 1, borderColor: '#e0e0e0', borderRadius: 12, padding: 20, backgroundColor: '#f9f9f9', marginBottom: 20 },
+  preview: { width: 200, height: 200, borderRadius: 12, alignSelf: 'center', marginBottom: 20 },
   label: { fontSize: 14, color: '#666', marginTop: 10 },
   valor: { fontSize: 18, fontWeight: '600', color: '#313131', marginTop: 2 },
   buttonWrapper: {

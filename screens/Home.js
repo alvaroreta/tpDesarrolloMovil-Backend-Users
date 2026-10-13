@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 //-- importa funciones de consulta y eliminación de datos de la BD
 import { collection, getDocs, doc, deleteDoc } from 'firebase/firestore';
@@ -74,6 +74,7 @@ export default function Home({ navigation }) {
         {/* Car de productos que mapea el id de cada elemento desde la bd */}
         {productos.map((producto) => (
           <View key={producto.id} style={styles.card}>
+            {!!producto.imagen && <Image source={{ uri: producto.imagen }} style={styles.foto} />}
             <View style={styles.info}>
               <Text style={styles.nombre}>{producto.nombre}</Text>
               <Text style={styles.stock}>Stock: {producto.stock}</Text>
@@ -154,6 +155,12 @@ const styles = StyleSheet.create({
   info: {
     flex: 1,
     justifyContent: 'center',
+  },
+  foto: {
+    width: 56,
+    height: 56,
+    borderRadius: 8,
+    marginRight: 12,
   },
   nombre: {
     fontSize: 16,

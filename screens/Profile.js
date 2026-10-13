@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { auth } from '../src/config/firebaseConfig';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { doc, getDoc } from 'firebase/firestore';
+import { auth, db } from '../src/config/firebaseConfig';
 
 export default function Profile({ navigation }) {
-  //  simulando la información del usuario
   const [userData, setUserData] = useState({
     email: auth.currentUser?.email || "nico@ejemplo.com",
     nombre: "Nico",
@@ -12,8 +13,24 @@ export default function Profile({ navigation }) {
     barrio: "Centro",
     calle: "Av. Belgrano",
     altura: "1234",
-    telefono: "387123456"
+    telefono: "387123456",
+    foto: ""
   });
+
+  useEffect(() => {
+    const cargarPerfil = async () => {
+      if (!auth.currentUser) return;
+      try {
+        const snap = await getDoc(doc(db, 'usuarios', auth.currentUser.uid));
+        if (snap.exists()) {
+          setUserData((prev) => ({ ...prev, ...snap.data(), email: auth.currentUser.email || prev.email }));
+        }
+      } catch (error) {
+        console.error('Error al cargar el perfil:', error);
+      }
+    };
+    cargarPerfil();
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -26,6 +43,14 @@ export default function Profile({ navigation }) {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Perfil Usuario</Text>
+
+      <View style={styles.avatarContainer}>
+        {userData.foto ? (
+          <Image source={{ uri: userData.foto }} style={styles.avatar} />
+        ) : (
+          <Ionicons name="person" size={56} color="#c25c32" />
+        )}
+      </View>
 
       <View style={styles.profileCard}>
 
@@ -89,6 +114,22 @@ const styles = StyleSheet.create({
     fontSize: 24,
     marginBottom: 25,
     color: '#313131',
+  },
+  avatarContainer: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    borderWidth: 3,
+    borderColor: '#c25c32',
+    backgroundColor: '#fcfcfc',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
+    overflow: 'hidden',
+  },
+  avatar: {
+    width: '100%',
+    height: '100%',
   },
   profileCard: {
     width: '100%',

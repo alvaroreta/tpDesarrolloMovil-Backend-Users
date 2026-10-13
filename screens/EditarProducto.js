@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, ScrollView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, ScrollView, Image } from 'react-native';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db, auth } from '../src/config/firebaseConfig';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { elegirImagenBase64 } from '../src/utils/imagenes';
 
 export default function EditarProducto({ route, navigation }) {
   const { id } = route.params; // Recibimos el id correctamente
@@ -11,6 +12,7 @@ export default function EditarProducto({ route, navigation }) {
   const [original, setOriginal] = useState({});
   const [loading, setLoading] = useState(true);
   const [guardando, setGuardando] = useState(false);
+  const [imagen, setImagen] = useState('');
 
   useEffect(() => {
     const cargarDatos = async () => {
@@ -19,12 +21,14 @@ export default function EditarProducto({ route, navigation }) {
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           const data = docSnap.data();
+          const { imagen: img, ...resto } = data;
           const inicial = {};
-          Object.entries(data).forEach(([clave, valor]) => {
+          Object.entries(resto).forEach(([clave, valor]) => {
             inicial[clave] = valor !== null && typeof valor === 'object' ? JSON.stringify(valor) : String(valor);
           });
           setCampos(inicial);
-          setOriginal(data);
+          setOriginal(resto);
+          setImagen(img || '');
         }
       } catch (error) {
         console.error("Error al cargar producto para editar:", error);
@@ -61,7 +65,7 @@ export default function EditarProducto({ route, navigation }) {
         actualizado[clave] = typeof original[clave] === 'number' ? Number(campos[clave]) : campos[clave];
       });
       const docRef = doc(db, 'productos', id);
-      await updateDoc(docRef, actualizado);
+      await updateDoc(docRef, { ...actualizado, imagen });
       Alert.alert('Éxito', 'Producto actualizado correctamente', [
         { text: 'OK', onPress: () => navigation.goBack() }
       ]);
@@ -98,6 +102,27 @@ export default function EditarProducto({ route, navigation }) {
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <Text style={styles.titulo}>Editar Producto</Text>
+
+        {!!imagen && <Image source={{ uri: imagen }} style={styles.preview} />}
+
+        <TouchableOpacity
+          style={styles.buttonWrapper}
+          onPress={async () => {
+            try {
+              const b64 = await elegirImagenBase64();
+              if (b64) setImagen(b64);
+            } catch (error) {
+              Alert.alert('Error', 'No se pudo seleccionar la imagen.');
+            }
+          }}
+        >
+          <LinearGradient
+            colors={['#b69e90', '#b69e90']}
+            style={styles.button}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+          ><Text style={styles.buttonText}>Cambiar imagen</Text></LinearGradient>
+        </TouchableOpacity>
 
         {Object.keys(campos).map((clave) => (
           <View key={clave}>
@@ -162,6 +187,7 @@ const styles = StyleSheet.create({
   titulo: { fontSize: 22, fontWeight: 'bold', marginBottom: 20, color: '#313131', textAlign: 'center' },
   label: { fontSize: 14, color: '#666', marginBottom: 5, marginTop: 10 },
   input: { borderWidth: 1, borderColor: '#ccc', borderRadius: 8, padding: 12, fontSize: 16, backgroundColor: '#f9f9f9' },
+  preview: { width: 160, height: 160, borderRadius: 12, alignSelf: 'center', marginVertical: 10 },
   buttonWrapper: {
     marginTop: 20,
     borderRadius: 8,
