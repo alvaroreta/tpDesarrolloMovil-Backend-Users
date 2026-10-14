@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../src/config/firebaseConfig';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function Profile({ navigation }) {
   const [userData, setUserData] = useState({
@@ -32,17 +33,31 @@ export default function Profile({ navigation }) {
     cargarPerfil();
   }, []);
 
-  const handleLogout = async () => {
-    try {
-      await auth.signOut();
-    } catch (error) {
-      console.error("Error al cerrar sesión: ", error);
-    }
-  };
+  const cerrarSesion = () => {
+     Alert.alert('Cerrar sesión', '¿Estás seguro que deseas cerrar sesión?', [
+       { text: 'Cancelar', style: 'cancel' },
+       {
+         text: 'Cerrar sesión',
+         style: 'destructive',
+         onPress: async () => {
+           try {
+             await auth.signOut();
+           } catch (error) {
+             console.error('Error al cerrar sesión: ', error);
+           }
+         },
+       },
+     ]);
+   };
+
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Perfil Usuario</Text>
+
+    <View style={styles.screenContainer}>
+    
+    <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
+
+    <Text style={styles.title}>Perfil Usuario</Text>
 
       <View style={styles.avatarContainer}>
         {userData.foto ? (
@@ -89,15 +104,41 @@ export default function Profile({ navigation }) {
         style={styles.buttonPrimary}
         onPress={() => navigation.navigate('EditProfile', { userData, setUserData })}
       >
+        <LinearGradient
+          colors={['#ff7a00', '#b3491c']}
+          style={styles.gradientButton}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+        >
         <Text style={styles.buttonText}>Editar Perfil</Text>
+        </LinearGradient>
       </TouchableOpacity>
-
-      <TouchableOpacity style={styles.buttonSecondary} onPress={handleLogout}>
-        <Text style={styles.buttonTextSecondary}>Cerrar Sesión</Text>
-      </TouchableOpacity>
-
-
     </ScrollView>
+
+    {/* ACÁ PEGAMOS EL MENÚ DE LOS ÍCONOS ABAJO DE LA PANTALLA */}
+    <View style={styles.bottomMenu}>
+        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Home')}>
+          <Ionicons name="home" size={22} color="#ffffff" />
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('AgregarProducto')}>
+          <Ionicons name="cube-outline" size={25} color="#ffffff" />
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Profile')}>
+          <Ionicons name="person" size={25} color="#ffffff" />
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('InfoEmpresa')}>
+          <Ionicons name="information-circle-outline" size={30} color="#ffffff" />
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.menuItem} onPress={cerrarSesion}>
+          <Ionicons name="log-out-outline" size={30} color="#ffffff" />
+        </TouchableOpacity>
+     </View>
+     
+    </View>
   );
 }
 
@@ -158,15 +199,22 @@ const styles = StyleSheet.create({
     color: '#313131',
     marginTop: 2,
   },
-  buttonPrimary: {
+ buttonPrimary: {
     width: '100%',
-    backgroundColor: '#c25c32',
+    borderRadius: 100,
+    overflow: 'hidden',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+
+gradientButton: {
+    width: '100%',
     paddingVertical: 14,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 100,
-    marginBottom: 12,
   },
+
   buttonSecondary: {
     width: '100%',
     backgroundColor: 'transparent',
@@ -187,4 +235,31 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Poppins_600SemiBold',
   },
+  screenContainer: { 
+    flex: 1,
+    backgroundColor: '#ffffff',
+  },
+  bottomMenu: {
+    height: 65,
+    backgroundColor: '#f9682b', 
+    borderTopWidth: 1,
+    borderTopColor: '#e0e0e0',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 25,
+    alignItems: 'center',
+    elevation: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -3 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    borderTopLeftRadius: 20, 
+    borderTopRightRadius: 20,
+  },
+  menuItem: {
+    padding: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
 });

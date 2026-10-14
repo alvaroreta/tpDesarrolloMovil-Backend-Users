@@ -58,12 +58,12 @@ export default function Navigation() {
             <Stack.Screen
               name="Profile"
               component={Profile}
-              options={{ title: 'Mi Perfil', headerTintColor: '#c25c32' }}
+              options={{ headerShown: false}}
             />
             <Stack.Screen
               name="EditProfile"
               component={EditProfile}
-              options={{ title: 'Editar Perfil', headerTintColor: '#c25c32' }}
+              options={{ headerShown: false }} // <-- APAGA LA FLECHA Y EL CARTEL DE ARRIBA
             />
             <Stack.Screen
               name="VerProducto"
