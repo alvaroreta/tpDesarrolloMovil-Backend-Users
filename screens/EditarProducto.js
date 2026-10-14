@@ -21,7 +21,7 @@ export default function EditarProducto({ route, navigation }) {
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           const data = docSnap.data();
-          const { imagen: img, ...resto } = data;
+          const { imagen: img, createdAt, ...resto } = data;
           const inicial = {};
           Object.entries(resto).forEach(([clave, valor]) => {
             inicial[clave] = valor !== null && typeof valor === 'object' ? JSON.stringify(valor) : String(valor);

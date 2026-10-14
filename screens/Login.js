@@ -99,6 +99,10 @@ export default function Login({ navigation }) {
         </LinearGradient>
       </TouchableOpacity>
 
+      <TouchableOpacity onPress={() => navigation.navigate('RestablecerContrasena')}>
+        <Text style={styles.forgotText}>¿Olvidaste tu contraseña?</Text>
+      </TouchableOpacity>
+
       <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
         <Text style={styles.signUpText}>REGISTRARME</Text>
       </TouchableOpacity>
@@ -187,5 +191,11 @@ const styles = StyleSheet.create({
     color: '#007AFF',
     //Incopora poppins al texto de registrarme
     fontFamily: 'Poppins_600SemiBold',
+  },
+  forgotText: {
+    marginTop: 12,
+    color: '#c25c32',
+    fontFamily: 'Poppins_400Regular',
+    fontSize: 14,
   },
 });

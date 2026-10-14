@@ -11,6 +11,9 @@ import Profile from '../screens/Profile';
 import EditProfile from '../screens/EditProfile';
 import VerProducto from '../screens/VerProducto';
 import EditarProducto from '../screens/EditarProducto';
+import InfoEmpresa from '../screens/InfoEmpresa';
+import RestablecerContrasena from '../screens/RestablecerContrasena';
+import AgregarProducto from '../screens/AgregarProducto';
 
 const Stack = createStackNavigator();
 
@@ -58,22 +61,32 @@ export default function Navigation() {
             <Stack.Screen
               name="Profile"
               component={Profile}
-              options={{ title: 'Mi Perfil', headerTintColor: '#c25c32' }}
+              options={{ title: 'Mi Perfil', headerTintColor: '#c25c32', headerLeft: () => null }}
             />
             <Stack.Screen
               name="EditProfile"
               component={EditProfile}
-              options={{ title: 'Editar Perfil', headerTintColor: '#c25c32' }}
+              options={{ title: 'Editar Perfil', headerTintColor: '#c25c32', headerLeft: () => null }}
             />
             <Stack.Screen
               name="VerProducto"
               component={VerProducto}
-              options={{ title: 'Ver Producto', headerTintColor: '#c25c32' }}
+              options={{ title: 'Ver Producto', headerTintColor: '#c25c32', headerLeft: () => null }}
             />
             <Stack.Screen
               name="EditarProducto"
               component={EditarProducto}
-              options={{ title: 'Editar Producto', headerTintColor: '#c25c32' }}
+              options={{ title: 'Editar Producto', headerTintColor: '#c25c32', headerLeft: () => null }}
+            />
+            <Stack.Screen
+              name="AgregarProducto"
+              component={AgregarProducto}
+              options={{ title: 'Agregar Producto', headerTintColor: '#c25c32', headerLeft: () => null }}
+            />
+            <Stack.Screen
+              name="InfoEmpresa"
+              component={InfoEmpresa}
+              options={{ title: 'Nosotros', headerTintColor: '#c25c32', headerLeft: () => null }}
             />
           </>
         ) : (
@@ -81,6 +94,7 @@ export default function Navigation() {
             <Stack.Screen name="Login" component={Login} options={{ title: 'Iniciar sesión' }} />
             {/* Cambiamos nombre a "Crear Usuario"*/}
             <Stack.Screen name="SignUp" component={SignUp} options={{ title: 'Crear Usuario' }} />
+            <Stack.Screen name="RestablecerContrasena" component={RestablecerContrasena} options={{ title: 'Recuperar Contraseña' }} />
           </>
         )}
       </Stack.Navigator>
