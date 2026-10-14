@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 //-- importa funciones de consulta y eliminación de datos de la BD
@@ -11,7 +11,40 @@ import { useFonts, Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold } fr
 
 export default function Home({ navigation }) {
   const [productos, setProductos] = useState([]);
+  const [busqueda, setBusqueda] = useState('');
+  const [ordenCampo, setOrdenCampo] = useState(null);
+  const [ordenAsc, setOrdenAsc] = useState(true);
   const [fontsLoaded] = useFonts({ Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold });
+
+  //--genera visibilida de productos según lo búsqueda realizada y aplica el filtro solo a productos visibles
+  const productosVisibles = productos
+    .filter((p) => {
+      const texto = busqueda.trim().toLowerCase();
+      if (!texto) return true;
+      return String(p.nombre ?? '').toLowerCase().includes(texto);
+    })
+    .sort((a, b) => {
+      if (!ordenCampo) return 0;
+      let comparacion;
+      if (ordenCampo === 'nombre') {
+        comparacion = String(a.nombre ?? '').localeCompare(String(b.nombre ?? ''), 'es', { sensitivity: 'base' });
+      } else {
+        comparacion = (Number(a.stock) || 0) - (Number(b.stock) || 0);
+      }
+      return ordenAsc ? comparacion : -comparacion;
+    });
+
+  //--lógica de orden de productos  
+  const ordenarPor = (campo) => {
+    if (ordenCampo === campo) {
+      setOrdenAsc((prev) => !prev);
+    } else {
+      setOrdenCampo(campo);
+      setOrdenAsc(true);
+    }
+  };
+
+  const flecha = (campo) => (ordenCampo === campo && !ordenAsc ? 'arrow-down' : 'arrow-up');
 
   //-- mantiene la pantalla de home actualizada por cada evento de cambio realizado en las pantallas de edición
   useFocusEffect(
@@ -72,12 +105,43 @@ export default function Home({ navigation }) {
   return (
     <View style={styles.container}>
       <Text style={styles.h1}>PRODUCTOS</Text>
+
+      <View style={styles.searchContainer}>
+        <Ionicons name="search" size={20} color="#c25c32" />
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Buscar producto"
+          placeholderTextColor="#999"
+          value={busqueda}
+          onChangeText={setBusqueda}
+        />
+      </View>
+
+      {/* Botón de orden ed productos en vista según nombre (AZ) o cantidad de stock*/}
+      <View style={styles.ordenRow}>
+        <TouchableOpacity
+          style={[styles.ordenBoton, ordenCampo === 'nombre' && styles.ordenBotonActivo]}
+          onPress={() => ordenarPor('nombre')}
+        >
+          <Text style={[styles.ordenTexto, ordenCampo === 'nombre' && styles.ordenTextoActivo]}>Nombre</Text>
+          <Ionicons name={flecha('nombre')} size={16} color={ordenCampo === 'nombre' ? '#ffffff' : '#c25c32'} />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.ordenBoton, ordenCampo === 'stock' && styles.ordenBotonActivo]}
+          onPress={() => ordenarPor('stock')}
+        >
+          <Text style={[styles.ordenTexto, ordenCampo === 'stock' && styles.ordenTextoActivo]}>Stock</Text>
+          <Ionicons name={flecha('stock')} size={16} color={ordenCampo === 'stock' ? '#ffffff' : '#c25c32'} />
+        </TouchableOpacity>
+      </View>
+
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}>
         {/* Carga de productos que mapea el id de cada elemento desde la bd */}
-        {productos.map((producto) => (
+        {productosVisibles.map((producto) => (
           <View key={producto.id} style={styles.card}>
             {!!producto.imagen && <Image source={{ uri: producto.imagen }} style={styles.foto} />}
             <View style={styles.info}>
@@ -145,6 +209,51 @@ const styles = StyleSheet.create({
     padding: 10,
     fontFamily: 'Poppins_700Bold',
     color: '#313131',
+  },
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#f9682b',
+    borderRadius: 100,
+    backgroundColor: '#ffffff',
+    paddingHorizontal: 15,
+    height: 46,
+    marginHorizontal: 20,
+    marginBottom: 10,
+  },
+  searchInput: {
+    flex: 1,
+    marginLeft: 8,
+    fontSize: 15,
+    color: '#313131',
+  },
+  ordenRow: {
+    flexDirection: 'row',
+    gap: 10,
+    marginHorizontal: 20,
+    marginBottom: 10,
+  },
+  ordenBoton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    borderWidth: 2,
+    borderColor: '#f9682b',
+    borderRadius: 100,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+  },
+  ordenBotonActivo: {
+    backgroundColor: '#f9682b',
+  },
+  ordenTexto: {
+    fontSize: 14,
+    color: '#c25c32',
+    fontFamily: 'Poppins_600SemiBold',
+  },
+  ordenTextoActivo: {
+    color: '#ffffff',
   },
   card: {
     width: '100%',
