@@ -1,26 +1,42 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, Alert, Image } from 'react-native';
-import { FontAwesome5, Ionicons } from '@expo/vector-icons';
+import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, Alert, Image, Modal } from 'react-native';
+import { FontAwesome5, Ionicons, FontAwesome } from '@expo/vector-icons';
 import { doc, updateDoc } from 'firebase/firestore';
 import { auth, db } from '../src/config/firebaseConfig';
 import { elegirImagenBase64 } from '../src/utils/imagenes';
+import { LinearGradient } from 'expo-linear-gradient';
+import { soloDigitos, formatearTelefono } from '../src/utils/telefono';
+
+//- Lista de cargos copiada exactamente de SignUp
+const CARGOS = [
+  'Encargado Administrativo',
+  'Aux. Adm.',
+  'Enc. de Deposito',
+  'Responsable de compra y acopio',
+  'Acopiador',
+  'Jefe de Planta',
+  'Analista QA',
+];
 
 export default function EditProfile({ route, navigation }) {
   const { userData, setUserData } = route.params;
 
   const [nombre, setNombre] = useState(userData.nombre);
   const [apellido, setApellido] = useState(userData.apellido);
+  const [cargo, setCargo] = useState(userData.cargo || '');
+  const [showCargoOptions, setShowCargoOptions] = useState(false);
   const [barrio, setBarrio] = useState(userData.barrio);
   const [calle, setCalle] = useState(userData.calle);
   const [altura, setAltura] = useState(userData.altura);
-  const [telefono, setTelefono] = useState(userData.telefono);
+  const [telefono, setTelefono] = useState(soloDigitos(userData.telefono));
   const [foto, setFoto] = useState(userData.foto || '');
 
-  const handleSave = async () => {
+   const procesarGuardado = async () => {
     const actualizado = {
       ...userData,
       nombre,
       apellido,
+      cargo,  
       barrio,
       calle,
       altura,
@@ -33,19 +49,45 @@ export default function EditProfile({ route, navigation }) {
         await updateDoc(doc(db, 'usuarios', auth.currentUser.uid), {
           nombre,
           apellido,
+          cargo,
           barrio,
           calle,
           altura,
           telefono,
           foto,
         });
-      }
+    }
       navigation.goBack();
     } catch (error) {
       console.error('Error al guardar el perfil:', error);
       Alert.alert('Error', 'No se pudo guardar el perfil.');
     }
   };
+
+ const handleSave = () => {
+    if (!cargo.trim() || !CARGOS.includes(cargo)) {
+      Alert.alert("Cargo inválido", "Debe seleccionar un cargo válido de la lista.");
+      return;
+    }
+
+    Alert.alert(
+      'Confirmar cambios',
+      '¿Estás seguro de que deseas guardar los cambios realizados?',
+      [
+        {
+          text: 'Cancelar',
+          style: 'cancel',
+        },
+        {
+          text: 'Sí, guardar',
+          style: 'default',
+          onPress: () => procesarGuardado(),
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+
 
   const cerrarSesion = () => {
     Alert.alert('Cerrar sesión', '¿Estás seguro que deseas cerrar sesión?', [
@@ -90,15 +132,72 @@ export default function EditProfile({ route, navigation }) {
 
         <Text style={styles.label}>Nombre</Text>
         <View style={styles.inputContainer}>
-          <TextInput style={styles.input} value={nombre} onChangeText={setNombre} placeholder="Ej. Juan" />
+
+         <TextInput 
+          style={styles.input} 
+          value={nombre} 
+          onChangeText={(texto) => {
+          const soloLetras = texto.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ ]/g, '');
+          setNombre(soloLetras);
+        }} 
+        placeholder="Ej. Juan" 
+      />
           <FontAwesome5 name="pen" size={16} color="#c25c32" style={styles.iconRight} />
         </View>
 
         <Text style={styles.label}>Apellido</Text>
         <View style={styles.inputContainer}>
-          <TextInput style={styles.input} value={apellido} onChangeText={setApellido} placeholder="Ej. Pérez" />
+          <TextInput style={styles.input} value={apellido} onChangeText={(texto) => {
+            const soloLetras = texto.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ ]/g, '');
+            setApellido(soloLetras);
+          }} placeholder="Ej. Pérez" />
           <FontAwesome5 name="pen" size={16} color="#c25c32" style={styles.iconRight} />
         </View>
+        
+                <Text style={styles.label}>Cargo</Text>
+        <TouchableOpacity
+          style={styles.inputContainer}
+          onPress={() => setShowCargoOptions(true)}
+          activeOpacity={0.7}
+        >
+          <Text style={cargo ? styles.input : styles.placeholder}>
+            {cargo || 'Ej. Analista QA'}
+          </Text>
+          <FontAwesome name="chevron-down" size={16} color="#c25c32" style={styles.iconRight} />
+        </TouchableOpacity>
+
+        <Modal
+          visible={showCargoOptions}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setShowCargoOptions(false)}
+        >
+          <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'center', alignItems: 'center', padding: 20 }}>
+            <TouchableOpacity
+              style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+              activeOpacity={1}
+              onPress={() => setShowCargoOptions(false)}
+            />
+            <View style={{ width: '100%', maxWidth: 400, backgroundColor: '#fff', borderRadius: 20, padding: 20 }}>
+              <Text style={{ fontFamily: 'Poppins_700Bold', fontSize: 16, color: '#313131', marginBottom: 10 }}>Seleccione su cargo</Text>
+              {CARGOS.map((opcion) => (
+                <TouchableOpacity
+                  key={opcion}
+                  style={{ paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#f0f0f0' }}
+                  onPress={() => {
+                    setCargo(opcion);
+                    setShowCargoOptions(false);
+                  }}
+                >
+                  <Text style={[{ fontFamily: 'Poppins_400Regular', fontSize: 14, color: '#313131' }, cargo === opcion && { color: '#c25c32', fontFamily: 'Poppins_600SemiBold' }]}>
+                    {opcion}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+        </Modal>
+
 
         <Text style={styles.label}>Barrio</Text>
         <View style={styles.inputContainer}>
@@ -125,12 +224,23 @@ export default function EditProfile({ route, navigation }) {
 
         <Text style={styles.label}>Teléfono</Text>
         <View style={styles.inputContainer}>
-          <TextInput style={styles.input} value={telefono} onChangeText={setTelefono} keyboardType="phone-pad" placeholder="Ej. 387123456" />
+          <TextInput style={styles.input} value={formatearTelefono(telefono)}
+          keyboardType="phone-pad"
+          onChangeText={(texto) => setTelefono(soloDigitos(texto))}
+             placeholder="Ej. (0387) - 1234567" 
+          />
           <FontAwesome5 name="pen" size={16} color="#c25c32" style={styles.iconRight} />
         </View>
 
         <TouchableOpacity style={styles.buttonSave} onPress={handleSave}>
-          <Text style={styles.buttonText}>Guardar Cambios</Text>
+          <LinearGradient
+            colors={['#ff7a00', '#b3491c']}
+            style={styles.button}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+          >
+            <Text style={styles.buttonText}>Guardar Cambios</Text>
+          </LinearGradient>
         </TouchableOpacity>
       </ScrollView>
 
@@ -157,7 +267,7 @@ export default function EditProfile({ route, navigation }) {
       </View>
     </View>
   );
-}
+ }
 
 const styles = StyleSheet.create({
   container: {
@@ -220,6 +330,14 @@ const styles = StyleSheet.create({
     color: '#313131',
     fontSize: 15,
   },
+
+   placeholder: {
+    flex: 1,
+    fontFamily: 'Poppins_400Regular',
+    fontSize: 15,
+    color: '#999',
+  },
+
   iconRight: {
     marginLeft: 10,
     fontWeight: 'bold',
@@ -228,16 +346,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width: '100%',
   },
-  buttonSave: {
+   buttonSave: {
+    marginTop: 25,
+    borderRadius: 100,
+    overflow: 'hidden',
     width: '100%',
-    backgroundColor: '#c25c32',
+    alignItems: 'center',
+    marginBottom: 30,
+  },
+    button: {
+    width: '100%',
     paddingVertical: 14,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 100,
-    marginTop: 25,
-    marginBottom: 30,
   },
+
   buttonText: {
     color: '#ffffff',
     fontSize: 16,
