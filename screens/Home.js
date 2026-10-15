@@ -1,6 +1,8 @@
 import React, { useCallback, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+
+//-- actualiza los datos eliminados o editados en home a tiempo real
 import { useFocusEffect } from '@react-navigation/native';
 //-- importa funciones de consulta y eliminación de datos de la BD
 import { collection, getDocs, doc, deleteDoc } from 'firebase/firestore';
@@ -100,6 +102,7 @@ export default function Home({ navigation }) {
     ]);
   };
 
+  //-- condicional que no carga nada hasta que la fuente de la app este lista
   if (!fontsLoaded) return null;
 
   return (
