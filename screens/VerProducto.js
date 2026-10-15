@@ -76,10 +76,14 @@ export default function VerProducto({ route, navigation }) {
             .map(([clave, valor]) => (
               <View key={clave}>
                 <Text style={styles.label}>
-                  {clave.charAt(0).toUpperCase() + clave.slice(1)}:
+                  {clave === 'createdAt' ? 'Creado el' : clave.charAt(0).toUpperCase() + clave.slice(1)}:
                 </Text>
                 <Text style={styles.valor}>
-                  {valor !== null && typeof valor === 'object' ? JSON.stringify(valor) : String(valor)}
+                  {valor && typeof valor === 'object'
+                    ? (typeof valor.seconds === 'number'
+                      ? new Date(valor.seconds * 1000).toLocaleString('es-AR')
+                      : JSON.stringify(valor))
+                    : String(valor)}
                 </Text>
               </View>
             ))}

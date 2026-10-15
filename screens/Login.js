@@ -23,7 +23,6 @@ export default function Login({ navigation }) {
 
     try {
       await signInWithEmailAndPassword(auth, email.trim(), password);
-      Alert.alert("Login exitoso", "Has iniciado sesión correctamente.");
       // El observador de Firebase cambia la pantalla al detectar la sesión.
     } catch (error) {
       console.error('Error de inicio de sesión:', error.code, error.message);
