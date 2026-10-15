@@ -30,12 +30,7 @@ export default function EditProfile({ route, navigation }) {
   const [telefono, setTelefono] = useState(userData.telefono || '(0');
   const [foto, setFoto] = useState(userData.foto || '');
 
-  const handleSave = async () => {
-    if (!cargo.trim() || !CARGOS.includes(cargo)) {
-      Alert.alert("Cargo inválido", "Debe seleccionar un cargo válido de la lista.");
-      return;
-    }
-
+   const procesarGuardado = async () => {
     const actualizado = {
       ...userData,
       nombre,
@@ -60,13 +55,39 @@ export default function EditProfile({ route, navigation }) {
           telefono,
           foto,
         });
-      }
+    }
       navigation.goBack();
     } catch (error) {
       console.error('Error al guardar el perfil:', error);
       Alert.alert('Error', 'No se pudo guardar el perfil.');
     }
   };
+
+  // Función para manejar el evento de guardar cambios
+ const handleSave = () => {
+    if (!cargo.trim() || !CARGOS.includes(cargo)) {
+      Alert.alert("Cargo inválido", "Debe seleccionar un cargo válido de la lista.");
+      return;
+    }
+
+    Alert.alert(
+      'Confirmar cambios',
+      '¿Estás seguro de que deseas guardar los cambios realizados?',
+      [
+        {
+          text: 'Cancelar',
+          style: 'cancel',
+        },
+        {
+          text: 'Sí, guardar',
+          style: 'default',
+          onPress: () => procesarGuardado(),
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+
 
   const cerrarSesion = () => {
     Alert.alert('Cerrar sesión', '¿Estás seguro que deseas cerrar sesión?', [
@@ -264,7 +285,7 @@ export default function EditProfile({ route, navigation }) {
       </View>
     </View>
   );
-}
+ }
 
 const styles = StyleSheet.create({
   container: {
