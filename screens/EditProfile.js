@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, Alert, Image, Modal } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, Alert, Image, Modal, KeyboardAvoidingView, Platform } from 'react-native';
 import { FontAwesome5, Ionicons, FontAwesome } from '@expo/vector-icons';
 import { doc, updateDoc } from 'firebase/firestore';
 import { auth, db } from '../src/config/firebaseConfig';
@@ -107,8 +107,11 @@ export default function EditProfile({ route, navigation }) {
   };
 
   return (
-    <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
         <Text style={styles.title}>Editar Perfil</Text>
 
         <TouchableOpacity
@@ -126,7 +129,7 @@ export default function EditProfile({ route, navigation }) {
           {foto ? (
             <Image source={{ uri: foto }} style={styles.avatar} />
           ) : (
-            <Ionicons name="camera" size={32} color="#c25c32" />
+            <Ionicons name="camera" size={32} color="#f9682b" />
           )}
         </TouchableOpacity>
 
@@ -142,7 +145,7 @@ export default function EditProfile({ route, navigation }) {
         }} 
         placeholder="Ej. Juan" 
       />
-          <FontAwesome5 name="pen" size={16} color="#c25c32" style={styles.iconRight} />
+          <FontAwesome5 name="pen" size={16} color="#f9682b" style={styles.iconRight} />
         </View>
 
         <Text style={styles.label}>Apellido</Text>
@@ -151,7 +154,7 @@ export default function EditProfile({ route, navigation }) {
             const soloLetras = texto.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ ]/g, '');
             setApellido(soloLetras);
           }} placeholder="Ej. Pérez" />
-          <FontAwesome5 name="pen" size={16} color="#c25c32" style={styles.iconRight} />
+          <FontAwesome5 name="pen" size={16} color="#f9682b" style={styles.iconRight} />
         </View>
         
                 <Text style={styles.label}>Cargo</Text>
@@ -163,7 +166,7 @@ export default function EditProfile({ route, navigation }) {
           <Text style={cargo ? styles.input : styles.placeholder}>
             {cargo || 'Ej. Analista QA'}
           </Text>
-          <FontAwesome name="chevron-down" size={16} color="#c25c32" style={styles.iconRight} />
+          <FontAwesome name="chevron-down" size={16} color="#f9682b" style={styles.iconRight} />
         </TouchableOpacity>
 
         <Modal
@@ -189,7 +192,7 @@ export default function EditProfile({ route, navigation }) {
                     setShowCargoOptions(false);
                   }}
                 >
-                  <Text style={[{ fontFamily: 'Poppins_400Regular', fontSize: 14, color: '#313131' }, cargo === opcion && { color: '#c25c32', fontFamily: 'Poppins_600SemiBold' }]}>
+                  <Text style={[{ fontFamily: 'Poppins_400Regular', fontSize: 14, color: '#313131' }, cargo === opcion && { color: '#f9682b', fontFamily: 'Poppins_600SemiBold' }]}>
                     {opcion}
                   </Text>
                 </TouchableOpacity>
@@ -202,7 +205,7 @@ export default function EditProfile({ route, navigation }) {
         <Text style={styles.label}>Barrio</Text>
         <View style={styles.inputContainer}>
           <TextInput style={styles.input} value={barrio} onChangeText={setBarrio} placeholder="Ej. Centro" />
-          <FontAwesome5 name="pen" size={16} color="#c25c32" style={styles.iconRight} />
+          <FontAwesome5 name="pen" size={16} color="#f9682b" style={styles.iconRight} />
         </View>
 
         <View style={styles.row}>
@@ -210,14 +213,14 @@ export default function EditProfile({ route, navigation }) {
             <Text style={styles.label}>Calle</Text>
             <View style={styles.inputContainer}>
               <TextInput style={styles.input} value={calle} onChangeText={setCalle} placeholder="Ej. Av. Belgrano" />
-              <FontAwesome5 name="pen" size={16} color="#c25c32" style={styles.iconRight} />
+              <FontAwesome5 name="pen" size={16} color="#f9682b" style={styles.iconRight} />
             </View>
           </View>
           <View style={{ flex: 1 }}>
             <Text style={styles.label}>Altura</Text>
             <View style={styles.inputContainer}>
               <TextInput style={styles.input} value={altura} onChangeText={setAltura} keyboardType="numeric" placeholder="Ej. 1234" />
-              <FontAwesome5 name="pen" size={14} color="#c25c32" style={styles.iconRight} />
+              <FontAwesome5 name="pen" size={14} color="#f9682b" style={styles.iconRight} />
             </View>
           </View>
         </View>
@@ -229,7 +232,7 @@ export default function EditProfile({ route, navigation }) {
           onChangeText={(texto) => setTelefono(soloDigitos(texto))}
              placeholder="Ej. (0387) - 1234567" 
           />
-          <FontAwesome5 name="pen" size={16} color="#c25c32" style={styles.iconRight} />
+          <FontAwesome5 name="pen" size={16} color="#f9682b" style={styles.iconRight} />
         </View>
 
         <TouchableOpacity style={styles.buttonSave} onPress={handleSave}>
@@ -265,7 +268,7 @@ export default function EditProfile({ route, navigation }) {
           <Ionicons name="log-out-outline" size={30} color="#ffffffff" />
         </TouchableOpacity>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
  }
 
@@ -292,7 +295,7 @@ const styles = StyleSheet.create({
     height: 110,
     borderRadius: 55,
     borderWidth: 2,
-    borderColor: '#c25c32',
+    borderColor: '#f9682b',
     backgroundColor: '#ffffff',
     alignSelf: 'center',
     alignItems: 'center',
@@ -316,7 +319,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: '#c25c32',
+    borderColor: '#f9682b',
     borderRadius: 100,
     backgroundColor: '#ffffff',
     paddingHorizontal: 20,

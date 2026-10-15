@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: '#c25c32',
+    borderColor: '#f9682b',
     borderRadius: 100,
     backgroundColor: '#ffffff',
     paddingHorizontal: 10,
@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
   },
   forgotText: {
     marginTop: 12,
-    color: '#c25c32',
+    color: '#f9682b',
     fontFamily: 'Poppins_400Regular',
     fontSize: 14,
   },

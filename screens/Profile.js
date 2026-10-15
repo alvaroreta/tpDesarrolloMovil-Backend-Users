@@ -64,7 +64,7 @@ export default function Profile({ navigation }) {
         {userData.foto ? (
           <Image source={{ uri: userData.foto }} style={styles.avatar} />
         ) : (
-          <Ionicons name="person" size={56} color="#c25c32" />
+          <Ionicons name="person" size={56} color="#f9682b" />
         )}
       </View>
 
@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
     height: 120,
     borderRadius: 60,
     borderWidth: 3,
-    borderColor: '#c25c32',
+    borderColor: '#f9682b',
     backgroundColor: '#fcfcfc',
     alignItems: 'center',
     justifyContent: 'center',
@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
   label: {
     fontFamily: 'Poppins_400Regular',
     fontSize: 13,
-    color: '#c25c32',
+    color: '#f9682b',
     textTransform: 'uppercase',
   },
   valueText: {

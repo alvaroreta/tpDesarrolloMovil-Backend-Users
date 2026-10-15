@@ -5,6 +5,7 @@ import { db } from '../src/config/firebaseConfig';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { elegirImagenBase64 } from '../src/utils/imagenes';
+import BottomMenu from '../components/BottomMenu';
 
 export default function AgregarProducto({ navigation }) {
   const [nombre, setNombre] = useState('');
@@ -77,7 +78,7 @@ export default function AgregarProducto({ navigation }) {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
     >
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+      <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
         <Text style={styles.titulo}>Nuevo Producto</Text>
 
         {!!foto && <Image source={{ uri: foto }} style={styles.preview} />}
@@ -93,7 +94,7 @@ export default function AgregarProducto({ navigation }) {
             }
           }}
         >
-          <Ionicons name="image-outline" size={20} color="#c25c32" />
+          <Ionicons name="image-outline" size={20} color="#f9682b" />
           <Text style={styles.botonImagenTexto}>{foto ? ' Cambiar imagen' : ' Agregar imagen'}</Text>
         </TouchableOpacity>
 
@@ -144,19 +145,21 @@ export default function AgregarProducto({ navigation }) {
           </LinearGradient>
         </TouchableOpacity>
       </ScrollView>
+      <BottomMenu navigation={navigation} />
     </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
+  scroll: { flex: 1 },
   scrollContent: { padding: 20, paddingBottom: 40 },
   titulo: { fontSize: 22, fontWeight: 'bold', marginBottom: 20, color: '#313131', textAlign: 'center' },
   label: { fontSize: 14, color: '#666', marginBottom: 5, marginTop: 10 },
   input: { borderWidth: 1, borderColor: '#ccc', borderRadius: 8, padding: 12, fontSize: 16, backgroundColor: '#f9f9f9', color: '#313131' },
   preview: { width: 160, height: 160, borderRadius: 12, alignSelf: 'center', marginBottom: 15 },
-  botonImagen: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', borderWidth: 2, borderColor: '#c25c32', borderRadius: 100, paddingVertical: 12, marginBottom: 10 },
-  botonImagenTexto: { color: '#c25c32', fontSize: 15, fontWeight: '600' },
+  botonImagen: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', borderWidth: 2, borderColor: '#f9682b', borderRadius: 100, paddingVertical: 12, marginBottom: 10 },
+  botonImagenTexto: { color: '#f9682b', fontSize: 15, fontWeight: '600' },
   buttonWrapper: {
     marginTop: 20,
     borderRadius: 8,

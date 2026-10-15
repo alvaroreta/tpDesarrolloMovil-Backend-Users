@@ -110,7 +110,7 @@ export default function Home({ navigation }) {
       <Text style={styles.h1}>PRODUCTOS</Text>
 
       <View style={styles.searchContainer}>
-        <Ionicons name="search" size={20} color="#c25c32" />
+        <Ionicons name="search" size={20} color="#f9682b" />
         <TextInput
           style={styles.searchInput}
           placeholder="Buscar producto"
@@ -127,7 +127,7 @@ export default function Home({ navigation }) {
           onPress={() => ordenarPor('nombre')}
         >
           <Text style={[styles.ordenTexto, ordenCampo === 'nombre' && styles.ordenTextoActivo]}>Nombre</Text>
-          <Ionicons name={flecha('nombre')} size={16} color={ordenCampo === 'nombre' ? '#ffffff' : '#c25c32'} />
+          <Ionicons name={flecha('nombre')} size={16} color={ordenCampo === 'nombre' ? '#ffffff' : '#f9682b'} />
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -135,7 +135,7 @@ export default function Home({ navigation }) {
           onPress={() => ordenarPor('stock')}
         >
           <Text style={[styles.ordenTexto, ordenCampo === 'stock' && styles.ordenTextoActivo]}>Stock</Text>
-          <Ionicons name={flecha('stock')} size={16} color={ordenCampo === 'stock' ? '#ffffff' : '#c25c32'} />
+          <Ionicons name={flecha('stock')} size={16} color={ordenCampo === 'stock' ? '#ffffff' : '#f9682b'} />
         </TouchableOpacity>
       </View>
 
@@ -252,7 +252,7 @@ const styles = StyleSheet.create({
   },
   ordenTexto: {
     fontSize: 14,
-    color: '#c25c32',
+    color: '#f9682b',
     fontFamily: 'Poppins_600SemiBold',
   },
   ordenTextoActivo: {

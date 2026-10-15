@@ -6,6 +6,7 @@ import { Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { Image } from 'react-native'
 import { Alert } from 'react-native';
+import { KeyboardAvoidingView, Platform } from 'react-native';
 
 export default function RestablecerContrasena({ navigation }) {
   const [fontsLoaded] = useFonts({ Poppins_400Regular, Poppins_600SemiBold });
@@ -24,7 +25,10 @@ export default function RestablecerContrasena({ navigation }) {
   if (!fontsLoaded) return null; //--Si las fuentes no se cargan, no renderiza nada
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
       <Image source={require('../assets/logo_sa/icon.png')} style={styles.logo} />
       <Text>Ingresa tu correo electrónico y te enviaremos un enlace para reestablecer tu contraseña.</Text>
       <Text style={styles.label}>Email</Text>
@@ -61,7 +65,7 @@ export default function RestablecerContrasena({ navigation }) {
 
 
 
-    </View>
+    </KeyboardAvoidingView>
   )
 }
 const styles = StyleSheet.create({
@@ -103,7 +107,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: '#c25c32',
+    borderColor: '#f9682b',
     borderRadius: 100,
     backgroundColor: '#ffffff',
     paddingHorizontal: 10,

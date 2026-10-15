@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, ScrollView, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, ScrollView, Image, KeyboardAvoidingView, Platform } from 'react-native';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db, auth } from '../src/config/firebaseConfig';
 import { Ionicons } from '@expo/vector-icons';
@@ -99,8 +99,11 @@ export default function EditarProducto({ route, navigation }) {
   }
 
   return (
-    <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+      <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
         <Text style={styles.titulo}>Editar Producto</Text>
 
         {!!imagen && <Image source={{ uri: imagen }} style={styles.preview} />}
@@ -176,7 +179,7 @@ export default function EditarProducto({ route, navigation }) {
           <Ionicons name="log-out-outline" size={30} color="#ffffffff" />
         </TouchableOpacity>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 

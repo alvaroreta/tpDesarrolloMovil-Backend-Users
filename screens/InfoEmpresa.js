@@ -4,6 +4,7 @@ import { StyleSheet } from 'react-native';
 import { Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFonts, Poppins_700Bold, Poppins_400Regular } from '@expo-google-fonts/poppins';
+import BottomMenu from '../components/BottomMenu';
 
 
 
@@ -19,7 +20,7 @@ export default function InfoEmpresa({ navigation }) {
 
   return (
     <View style={styles.container}>
-        <ScrollView>
+        <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <Image source={require('../assets/logo_sa/icon.png')} style={styles.logo} />
         <LinearGradient 
         colors={['#ff7a00', '#b3491c']}
@@ -100,6 +101,7 @@ export default function InfoEmpresa({ navigation }) {
           ><Text style={styles.buttonText}>Volver</Text></LinearGradient>
         </TouchableOpacity>
         </ScrollView>
+        <BottomMenu navigation={navigation} />
     </View>
   )
 }
@@ -109,8 +111,13 @@ const styles = StyleSheet.create({
 
   container: {
     flex: 1,
-    padding: 20,
     backgroundColor: '#ffffffff',
+  },
+  scroll: {
+    flex: 1,
+  },
+  scrollContent: {
+    padding: 20,
   },
   logo: {
     width: 200,

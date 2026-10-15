@@ -61,32 +61,32 @@ export default function Navigation() {
             <Stack.Screen
               name="Profile"
               component={Profile}
-              options={{ title: 'Mi Perfil', headerTintColor: '#c25c32', headerLeft: () => null }}
+              options={{ title: 'Mi Perfil', headerTintColor: '#f9682b', headerLeft: () => null }}
             />
             <Stack.Screen
               name="EditProfile"
               component={EditProfile}
-              options={{ title: 'Editar Perfil', headerTintColor: '#c25c32', headerLeft: () => null }}
+              options={{ title: 'Editar Perfil', headerTintColor: '#f9682b', headerLeft: () => null }}
             />
             <Stack.Screen
               name="VerProducto"
               component={VerProducto}
-              options={{ title: 'Ver Producto', headerTintColor: '#c25c32', headerLeft: () => null }}
+              options={{ title: 'Ver Producto', headerTintColor: '#f9682b', headerLeft: () => null }}
             />
             <Stack.Screen
               name="EditarProducto"
               component={EditarProducto}
-              options={{ title: 'Editar Producto', headerTintColor: '#c25c32', headerLeft: () => null }}
+              options={{ title: 'Editar Producto', headerTintColor: '#f9682b', headerLeft: () => null }}
             />
             <Stack.Screen
               name="AgregarProducto"
               component={AgregarProducto}
-              options={{ title: 'Agregar Producto', headerTintColor: '#c25c32', headerLeft: () => null }}
+              options={{ title: 'Agregar Producto', headerTintColor: '#f9682b', headerLeft: () => null }}
             />
             <Stack.Screen
               name="InfoEmpresa"
               component={InfoEmpresa}
-              options={{ title: 'Nosotros', headerTintColor: '#c25c32', headerLeft: () => null }}
+              options={{ title: 'Nosotros', headerTintColor: '#f9682b', headerLeft: () => null }}
             />
           </>
         ) : (

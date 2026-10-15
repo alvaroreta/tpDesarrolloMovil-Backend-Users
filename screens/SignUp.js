@@ -8,6 +8,7 @@ import { doc, setDoc } from 'firebase/firestore';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFonts, Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold } from '@expo-google-fonts/poppins';
 import { elegirImagenBase64 } from '../src/utils/imagenes';
+import { soloDigitos, formatearTelefono } from '../src/utils/telefono';
 
 //- lista de cargos para la optionbar de creación de cuentas
 const CARGOS = [
@@ -286,9 +287,9 @@ export default function SignUp({ navigation }) {
           <FontAwesome name="user" size={20} color="#ccc" style={styles.icon} />
           <TextInput
             style={styles.input}
-            placeholder="Ej. 387123456"
-            value={telefono}
-            onChangeText={setTelefono}
+            placeholder="Ej. (0387) - 1234567"
+            value={formatearTelefono(telefono)}
+            onChangeText={(texto) => setTelefono(soloDigitos(texto))}
             keyboardType="phone-pad"
           />
         </View>
@@ -339,7 +340,7 @@ export default function SignUp({ navigation }) {
             <Image source={{ uri: foto }} style={styles.avatar} />
           ) : (
             <>
-              <FontAwesome name="camera" size={24} color="#c25c32" />
+              <FontAwesome name="camera" size={24} color="#f9682b" />
               <Text style={styles.avatarText}>Subir foto</Text>
             </>
           )}
@@ -388,7 +389,7 @@ const styles = StyleSheet.create({
     height: 100,
     borderRadius: 50,
     borderWidth: 2,
-    borderColor: '#c25c32',
+    borderColor: '#f9682b',
     backgroundColor: '#ffffff',
     alignItems: 'center',
     justifyContent: 'center',
@@ -402,7 +403,7 @@ const styles = StyleSheet.create({
   avatarText: {
     fontFamily: 'Poppins_400Regular',
     fontSize: 12,
-    color: '#c25c32',
+    color: '#f9682b',
     marginTop: 4,
   },
   title: {
@@ -422,7 +423,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: '#c25c32',
+    borderColor: '#f9682b',
     borderRadius: 100,
     backgroundColor: '#ffffff',
     paddingHorizontal: 10,
@@ -486,7 +487,7 @@ const styles = StyleSheet.create({
     color: '#313131',
   },
   modalOptionTextSelected: {
-    color: '#c25c32',
+    color: '#f9682b',
     fontFamily: 'Poppins_600SemiBold',
   },
   buttonWrapper: {
