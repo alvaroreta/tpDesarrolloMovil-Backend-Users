@@ -4,6 +4,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth, isFirebaseConfigured } from '../src/config/firebaseConfig';
+//linea agregada para el inicio de la animacion
+import Welcome from '../screens/Welcome';
 import Login from '../screens/Login';
 import SignUp from '../screens/SignUp';
 import Home from '../screens/Home';
@@ -16,11 +18,24 @@ const Stack = createStackNavigator();
 
 export default function Navigation() {
   const [user, setUser] = useState(undefined);
-
+            //MODIFICADO PARA QUE EL SPLASH SE MUESTRE SIEMPRE 4 SEGUNDOS, INDEPENDIENTEMENTE DE LA AUTENTICACION
+  // 1. (El estado para controlar el Splash):
+  const [showSplash, setShowSplash] = useState(true);
+ 
   useEffect(() => {
     if (!auth) return;
     return onAuthStateChanged(auth, setUser);
   }, []);
+
+   // 2.ESTE BLOQUE COMPLETO (El temporizador de 4 segundos):
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowSplash(false); // Oculta el splash tras 4 segundos
+    }, 4000);
+
+    return () => clearTimeout(timer); // Limpieza al desmontar
+  }, []);
+
 
   if (!isFirebaseConfigured) {
     return (
@@ -32,8 +47,14 @@ export default function Navigation() {
     );
   }
 
+  // 1. Mientras Firebase esté revisando el estado del usuario en segundo plano, mostramos la presentación
   if (user === undefined) {
-    return <View style={styles.center}><ActivityIndicator size="large" /></View>;
+    return <Welcome />;
+  }
+
+  // 2. Si Firebase ya sabe si hay o no usuario, pero TODAVÍA no pasaron los 4 segundos del contador, seguimos mostrando la presentación
+  if (showSplash) {
+    return <Welcome />;
   }
 
   return (

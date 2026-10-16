@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, Alert, Image, Modal } from 'react-native';
+//-- incoramos KeyboardAvoidingView para evitar que el teclado se superoponga a los campos de ingresos de datos
+import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, Alert, Image, Modal, KeyboardAvoidingView, Platform } from 'react-native';
 import { FontAwesome5, Ionicons, FontAwesome } from '@expo/vector-icons';
 import { doc, updateDoc } from 'firebase/firestore';
 import { auth, db } from '../src/config/firebaseConfig';
@@ -16,7 +17,7 @@ const CARGOS = [
   'Jefe de Planta',
   'Analista QA',
 ];
-
+//- Importa fuente poppings mediante expo-font y expo-google-fonts, para poder usarla en los estilos de la pantalla de edición de perfil.
 export default function EditProfile({ route, navigation }) {
   const { userData, setUserData } = route.params;
 
@@ -62,14 +63,13 @@ export default function EditProfile({ route, navigation }) {
       Alert.alert('Error', 'No se pudo guardar el perfil.');
     }
   };
-
-  // Función para manejar el evento de guardar cambios
+//--Función para manejar el guardado de los cambios en el perfil del usuario.
  const handleSave = () => {
     if (!cargo.trim() || !CARGOS.includes(cargo)) {
       Alert.alert("Cargo inválido", "Debe seleccionar un cargo válido de la lista.");
       return;
     }
-
+//--Se muestra un mensaje de confirmación antes de guardar los cambios.
     Alert.alert(
       'Confirmar cambios',
       '¿Estás seguro de que deseas guardar los cambios realizados?',
@@ -105,7 +105,7 @@ export default function EditProfile({ route, navigation }) {
       },
     ]);
   };
-
+//--Sección de estilos para la pantalla de edición de perfil
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
@@ -166,7 +166,7 @@ export default function EditProfile({ route, navigation }) {
           </Text>
           <FontAwesome name="chevron-down" size={16} color="#c25c32" style={styles.iconRight} />
         </TouchableOpacity>
-
+      // muestra opciones para el usuario para seleccionar su cargo de la lista de CARGOS
         <Modal
           visible={showCargoOptions}
           transparent
@@ -199,7 +199,7 @@ export default function EditProfile({ route, navigation }) {
           </View>
         </Modal>
 
-
+        //--Sección de dirección y teléfono 
         <Text style={styles.label}>Barrio</Text>
         <View style={styles.inputContainer}>
           <TextInput style={styles.input} value={barrio} onChangeText={setBarrio} placeholder="Ej. Centro" />
@@ -261,7 +261,8 @@ export default function EditProfile({ route, navigation }) {
           </LinearGradient>
         </TouchableOpacity>
       </ScrollView>
-
+//Es la etiqueta que crea el contenedor visual para el menú inferior, que contiene 
+//los botones de navegación y el botón de cerrar sesión. Se utiliza para organizar y mostrar los elementos del menú en la parte inferior de la pantalla.
       <View style={styles.bottomMenu}>
         <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Home')}>
           <Ionicons name="home" size={22} color="#ffffffff" />
@@ -286,7 +287,7 @@ export default function EditProfile({ route, navigation }) {
     </View>
   );
  }
-
+// forma estandar de definir estilos en React Native, usando StyleSheet.create para optimizar el rendimiento y mantener la consistencia en toda la aplicación.
 const styles = StyleSheet.create({
   container: {
     flex: 1,
