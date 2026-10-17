@@ -31,12 +31,12 @@ export default function EditProfile({ route, navigation }) {
   const [telefono, setTelefono] = useState(soloDigitos(userData.telefono));
   const [foto, setFoto] = useState(userData.foto || '');
 
-   const procesarGuardado = async () => {
+  const procesarGuardado = async () => {
     const actualizado = {
       ...userData,
       nombre,
       apellido,
-      cargo,  
+      cargo,
       barrio,
       calle,
       altura,
@@ -56,7 +56,7 @@ export default function EditProfile({ route, navigation }) {
           telefono,
           foto,
         });
-    }
+      }
       navigation.goBack();
     } catch (error) {
       console.error('Error al guardar el perfil:', error);
@@ -64,7 +64,7 @@ export default function EditProfile({ route, navigation }) {
     }
   };
 
- const handleSave = () => {
+  const handleSave = () => {
     if (!cargo.trim() || !CARGOS.includes(cargo)) {
       Alert.alert("Cargo inválido", "Debe seleccionar un cargo válido de la lista.");
       return;
@@ -136,15 +136,15 @@ export default function EditProfile({ route, navigation }) {
         <Text style={styles.label}>Nombre</Text>
         <View style={styles.inputContainer}>
 
-         <TextInput 
-          style={styles.input} 
-          value={nombre} 
-          onChangeText={(texto) => {
-          const soloLetras = texto.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ ]/g, '');
-          setNombre(soloLetras);
-        }} 
-        placeholder="Ej. Juan" 
-      />
+          <TextInput
+            style={styles.input}
+            value={nombre}
+            onChangeText={(texto) => {
+              const soloLetras = texto.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ ]/g, '');
+              setNombre(soloLetras);
+            }}
+            placeholder="Ej. Juan"
+          />
           <FontAwesome5 name="pen" size={16} color="#f9682b" style={styles.iconRight} />
         </View>
 
@@ -156,18 +156,7 @@ export default function EditProfile({ route, navigation }) {
           }} placeholder="Ej. Pérez" />
           <FontAwesome5 name="pen" size={16} color="#f9682b" style={styles.iconRight} />
         </View>
-        
-                <Text style={styles.label}>Cargo</Text>
-        <TouchableOpacity
-          style={styles.inputContainer}
-          onPress={() => setShowCargoOptions(true)}
-          activeOpacity={0.7}
-        >
-          <Text style={cargo ? styles.input : styles.placeholder}>
-            {cargo || 'Ej. Analista QA'}
-          </Text>
-          <FontAwesome name="chevron-down" size={16} color="#f9682b" style={styles.iconRight} />
-        </TouchableOpacity>
+
 
         <Modal
           visible={showCargoOptions}
@@ -228,9 +217,9 @@ export default function EditProfile({ route, navigation }) {
         <Text style={styles.label}>Teléfono</Text>
         <View style={styles.inputContainer}>
           <TextInput style={styles.input} value={formatearTelefono(telefono)}
-          keyboardType="phone-pad"
-          onChangeText={(texto) => setTelefono(soloDigitos(texto))}
-             placeholder="Ej. (0387) - 1234567" 
+            keyboardType="phone-pad"
+            onChangeText={(texto) => setTelefono(soloDigitos(texto))}
+            placeholder="Ej. (0387) - 1234567"
           />
           <FontAwesome5 name="pen" size={16} color="#f9682b" style={styles.iconRight} />
         </View>
@@ -270,7 +259,7 @@ export default function EditProfile({ route, navigation }) {
       </View>
     </KeyboardAvoidingView>
   );
- }
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -334,7 +323,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
 
-   placeholder: {
+  placeholder: {
     flex: 1,
     fontFamily: 'Poppins_400Regular',
     fontSize: 15,
@@ -349,7 +338,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width: '100%',
   },
-   buttonSave: {
+  buttonSave: {
     marginTop: 25,
     borderRadius: 100,
     overflow: 'hidden',
@@ -357,7 +346,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 30,
   },
-    button: {
+  button: {
     width: '100%',
     paddingVertical: 14,
     alignItems: 'center',
